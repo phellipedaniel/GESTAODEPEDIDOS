@@ -3,131 +3,236 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestão de Pedidos · Registro de Divergências</title>
+<title>Controle de Estoque · Petlove</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-  :root{
-    --bg:#0E1117;
-    --panel:#161B24;
-    --panel-2:#1C2230;
-    --line:#262E3D;
-    --line-soft:#1F2633;
-    --ink:#F2F5FA;
-    --ink-2:#A7B1C2;
-    --ink-3:#6B7587;
-    --accent:#5B8DEF;
-    --accent-soft:#1A2540;
-    --lime:#B9F227;
-    --c-cancel:#F2655C;
-    --c-pick:#E0A93B;
-    --c-pack:#5B8DEF;
-    --c-ncf:#C57BF0;
-    --ok:#4FD1A1;
-    --radius:14px;
-    --shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 12px 40px rgba(0,0,0,.4);
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    background:
-      radial-gradient(900px 500px at 88% -10%, rgba(91,141,239,.10), transparent 60%),
-      radial-gradient(700px 600px at -5% 110%, rgba(185,242,39,.06), transparent 55%),
-      var(--bg);
-    color:var(--ink);
-    font-family:"Inter",system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;
-    line-height:1.5;
-    min-height:100%;
-  }
-  .wrap{max-width:1180px;margin:0 auto;padding:28px 24px 64px}
+:root {
+  --bg: #0E1117;
+  --panel: #161B24;
+  --panel-2: #1C2230;
+  --line: #262E3D;
+  --line-soft: #1F2633;
+  --ink: #F2F5FA;
+  --ink-2: #A7B1C2;
+  --ink-3: #6B7587;
+  --accent: #5B8DEF;
+  --accent-soft: #1A2540;
+  --lime: #B9F227;
+  --c-cancel: #F2655C;
+  --c-pick: #E0A93B;
+  --c-pack: #5B8DEF;
+  --c-ncf: #C57BF0;
+  --ok: #4FD1A1;
+  --radius: 14px;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 12px 40px rgba(0,0,0,.4);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background:
+    radial-gradient(900px 500px at 88% -10%, rgba(91,141,239,.10), transparent 60%),
+    radial-gradient(700px 600px at -5% 110%, rgba(185,242,39,.06), transparent 55%),
+    var(--bg);
+  color: var(--ink);
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  min-height: 100%;
+}
+.wrap { max-width: 1200px; margin: 0 auto; padding: 28px 24px 64px; }
 
-  /* Topbar */
-  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap}
-  .brand{display:flex;align-items:center;gap:13px}
-  .mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(150deg,var(--accent),#3A6BD0);display:grid;place-items:center;box-shadow:0 6px 20px rgba(91,141,239,.35)}
-  .mark svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:1.8}
-  .brand h1{font-family:"Space Grotesk";font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
-  .brand p{font-size:12.5px;color:var(--ink-3);font-weight:450}
-  .clock{font-family:"JetBrains Mono";font-size:12.5px;color:var(--ink-2);background:var(--panel);border:1px solid var(--line);padding:8px 14px;border-radius:999px;display:flex;align-items:center;gap:8px}
-  .pulse{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(79,209,161,.6);animation:pulse 2.4s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(79,209,161,.5)}70%{box-shadow:0 0 0 8px rgba(79,209,161,0)}100%{box-shadow:0 0 0 0 rgba(79,209,161,0)}}
+/* ── Topbar ── */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 28px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 13px; }
+.mark { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(150deg, var(--accent), #3A6BD0); display: grid; place-items: center; box-shadow: 0 6px 20px rgba(91,141,239,.35); flex-shrink: 0; }
+.mark svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 1.8; }
+.brand h1 { font-family: "Space Grotesk"; font-size: 20px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
+.brand p { font-size: 12.5px; color: var(--ink-3); }
+.top-right { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.clock { font-family: "JetBrains Mono"; font-size: 12.5px; color: var(--ink-2); background: var(--panel); border: 1px solid var(--line); padding: 8px 14px; border-radius: 999px; display: flex; align-items: center; gap: 8px; }
+.pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); animation: pulse 2.4s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(79,209,161,.5); } 70% { box-shadow: 0 0 0 8px rgba(79,209,161,0); } 100% { box-shadow: 0 0 0 0 rgba(79,209,161,0); } }
 
-  .grid{display:grid;grid-template-columns:1.55fr 1fr;gap:22px;align-items:start}
-  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+/* ── Grid ── */
+.grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 22px; align-items: start; }
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
 
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-  .card-h{padding:20px 22px 0}
-  .eyebrow{font-family:"JetBrains Mono";font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
-  .card-h h2{font-family:"Space Grotesk";font-size:18px;font-weight:600;letter-spacing:-.01em;margin-top:6px}
-  .card-b{padding:18px 22px 22px}
+/* ── Cards ── */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.card-h { padding: 20px 22px 0; }
+.eyebrow { font-family: "JetBrains Mono"; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.card-h h2 { font-family: "Space Grotesk"; font-size: 18px; font-weight: 600; letter-spacing: -.01em; margin-top: 6px; }
+.card-b { padding: 18px 22px 22px; }
 
-  /* Tipo selector */
-  .tipos{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
-  .tipo{appearance:none;text-align:left;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:14px 14px;color:var(--ink);transition:transform .15s,border-color .15s,background .15s;position:relative;overflow:hidden}
-  .tipo:hover{border-color:var(--line);transform:translateY(-1px);background:#222A3A}
-  .tipo .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-bottom:10px}
-  .tipo .tt{display:block;font-size:14px;font-weight:500}
-  .tipo .ts{display:block;font-size:11.5px;color:var(--ink-3);margin-top:2px}
-  .tipo[aria-pressed="true"]{border-color:var(--sel,var(--accent));background:linear-gradient(180deg,rgba(91,141,239,.10),transparent)}
-  .tipo[aria-pressed="true"]::after{content:"";position:absolute;inset:0;border-radius:12px;box-shadow:inset 0 0 0 1px var(--sel,var(--accent))}
-  .tipo .check{position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;opacity:0;transition:opacity .15s}
-  .tipo[aria-pressed="true"] .check{opacity:1}
-  .tipo .check svg{width:11px;height:11px;stroke:#0E1117;stroke-width:3;fill:none}
+/* ── Tipos ── */
+.tipos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+.tipo { appearance: none; text-align: left; cursor: pointer; background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; color: var(--ink); transition: transform .15s, border-color .15s, background .15s; position: relative; overflow: hidden; }
+.tipo:hover { transform: translateY(-1px); background: #222A3A; }
+.tipo .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-bottom: 10px; }
+.tipo .tt { display: block; font-size: 14px; font-weight: 500; }
+.tipo .ts { display: block; font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+.tipo[aria-pressed="true"] { border-color: var(--sel, var(--accent)); background: linear-gradient(180deg, rgba(91,141,239,.08), transparent); }
+.tipo[aria-pressed="true"]::after { content: ""; position: absolute; inset: 0; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--sel, var(--accent)); }
+.tipo .check { position: absolute; top: 12px; right: 12px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; opacity: 0; transition: opacity .15s; }
+.tipo[aria-pressed="true"] .check { opacity: 1; }
+.tipo .check svg { width: 11px; height: 11px; stroke: #0E1117; stroke-width: 3; fill: none; }
 
-  /* Fields */
-  .field{margin-bottom:16px}
-  .field label{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:7px;font-weight:500}
-  .req{color:var(--c-cancel)}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  @media(max-width:560px){.row{grid-template-columns:1fr}}
-  input,select,textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:11px;padding:12px 13px;font-size:14px;font-family:inherit;transition:border-color .15s,box-shadow .15s}
-  input::placeholder,textarea::placeholder{color:var(--ink-3)}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,141,239,.18)}
-  select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7587' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
-  .mono{font-family:"JetBrains Mono"}
-  textarea{resize:vertical;min-height:64px}
+/* ── Fields ── */
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12.5px; color: var(--ink-2); margin-bottom: 7px; font-weight: 500; }
+.req { color: var(--c-cancel); }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.row-wide { display: grid; grid-template-columns: 3fr 1fr; gap: 14px; }
+.row.no-entrega { grid-template-columns: 1fr; }
+@media (max-width: 560px) { .row, .row-wide { grid-template-columns: 1fr; } }
+input, select, textarea { width: 100%; background: var(--panel-2); border: 1px solid var(--line); color: var(--ink); border-radius: 11px; padding: 12px 13px; font-size: 14px; font-family: inherit; transition: border-color .15s, box-shadow .15s; }
+input::placeholder, textarea::placeholder { color: var(--ink-3); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,141,239,.18); }
+select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7587' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; padding-right: 36px; }
+input[type="number"] { -moz-appearance: textfield; }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { appearance: none; }
+.mono { font-family: "JetBrains Mono"; }
+input[type="date"] { color-scheme: dark; }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); cursor: pointer; }
+.extra { animation: fadeIn .22s ease; }
+.extra-head { display: flex; align-items: center; gap: 12px; margin: 2px 0 16px; }
+.extra-line { flex: 1; height: 1px; background: var(--line); }
+.extra-tag { font-family: "JetBrains Mono"; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+textarea { resize: vertical; min-height: 68px; }
 
-  .actions{display:flex;align-items:center;gap:12px;margin-top:4px}
-  .btn{cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;border-radius:11px;padding:12px 20px;border:1px solid transparent;transition:transform .12s,filter .15s}
-  .btn:active{transform:scale(.98)}
-  .btn-primary{background:var(--lime);color:#10210A;font-weight:600}
-  .btn-primary:hover{filter:brightness(1.05)}
-  .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink-2)}
-  .btn-ghost:hover{background:var(--panel-2);color:var(--ink)}
-  .toast{margin-left:auto;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s;display:flex;align-items:center;gap:7px}
-  .toast.show{opacity:1}
-  .toast.ok{color:var(--ok)}
-  .toast.err{color:var(--c-cancel)}
+/* ── Buttons ── */
+.actions { display: flex; align-items: center; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+.btn { cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 500; border-radius: 11px; padding: 11px 18px; border: 1px solid transparent; transition: transform .12s, filter .15s, background .15s; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+.btn:active { transform: scale(.98); }
+.btn-primary { background: var(--lime); color: #10210A; font-weight: 600; }
+.btn-primary:hover { filter: brightness(1.06); }
+.btn-ghost { background: transparent; border-color: var(--line); color: var(--ink-2); }
+.btn-ghost:hover { background: var(--panel-2); color: var(--ink); }
+.toast { margin-left: auto; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity .2s; display: flex; align-items: center; gap: 7px; }
+.toast.show { opacity: 1; }
+.toast.ok { color: var(--ok); }
+.toast.err { color: var(--c-cancel); }
 
-  /* Stats */
-  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
-  .stat{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:12px;padding:13px 15px}
-  .stat .n{font-family:"Space Grotesk";font-size:26px;font-weight:600;letter-spacing:-.02em}
-  .stat .l{font-size:11.5px;color:var(--ink-3);margin-top:1px}
+/* ── Stats ── */
+.stats-main { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px; }
+.stats-tipos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+@media (max-width: 1100px) { .stats-tipos { grid-template-columns: repeat(2, 1fr); } }
+.stat { background: var(--panel-2); border: 1px solid var(--line-soft); border-radius: 12px; padding: 13px 15px; }
+.stat .n { font-family: "Space Grotesk"; font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
+.stat .l { font-size: 11.5px; color: var(--ink-3); margin-top: 1px; }
+.stat-sm { background: var(--panel-2); border: 1px solid var(--line-soft); border-left: 3px solid; border-radius: 10px; padding: 10px 12px; }
+.stat-sm .n { font-family: "Space Grotesk"; font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+.stat-sm .l { font-size: 10px; color: var(--ink-3); margin-top: 2px; }
 
-  /* Records */
-  .feed{display:flex;flex-direction:column;gap:9px;max-height:560px;overflow:auto;padding-right:4px}
-  .feed::-webkit-scrollbar{width:7px}
-  .feed::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
-  .empty{text-align:center;padding:42px 16px;color:var(--ink-3)}
-  .empty svg{width:38px;height:38px;stroke:var(--line);stroke-width:1.4;fill:none;margin-bottom:12px}
-  .empty p{font-size:13.5px}
-  .rec{background:var(--panel-2);border:1px solid var(--line-soft);border-left-width:3px;border-radius:11px;padding:13px 15px;animation:in .25s ease}
-  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .rec-top{display:flex;align-items:center;gap:9px;margin-bottom:8px}
-  .tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:7px;letter-spacing:.01em}
-  .rec-time{margin-left:auto;font-family:"JetBrains Mono";font-size:11px;color:var(--ink-3)}
-  .rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .rec-grid .k{font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
-  .rec-grid .v{font-size:13px;font-weight:500;margin-top:1px}
-  .rec-grid .v.mono{font-family:"JetBrains Mono";font-size:12.5px}
-  .rec-obs{margin-top:9px;font-size:12.5px;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:8px}
-  .rec-del{margin-left:8px;background:none;border:none;color:var(--ink-3);cursor:pointer;padding:2px;border-radius:6px;display:grid;place-items:center}
-  .rec-del:hover{color:var(--c-cancel);background:rgba(242,101,92,.1)}
-  .rec-del svg{width:14px;height:14px;stroke:currentColor;stroke-width:1.8;fill:none}
-  .planta-chip{font-family:"JetBrains Mono";font-size:11px;color:var(--ink-2);background:var(--panel);border:1px solid var(--line);padding:2px 8px;border-radius:6px}
+/* ── Filter bar ── */
+.filter-bar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-pill { appearance: none; cursor: pointer; font-family: inherit; font-size: 11.5px; font-weight: 500; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink-3); transition: all .15s; }
+.filter-pill:hover { color: var(--ink); border-color: var(--ink-3); }
+.filter-pill.active { color: var(--ink); border-color: var(--accent); background: var(--accent-soft); }
+.filter-pill[data-tipo="cancelamento"].active    { background: rgba(242,101,92,.12);  border-color: #F2655C; color: #F2655C; }
+.filter-pill[data-tipo="picking"].active         { background: rgba(224,169,59,.12);  border-color: #E0A93B; color: #E0A93B; }
+.filter-pill[data-tipo="packing"].active         { background: rgba(91,141,239,.12);  border-color: #5B8DEF; color: #5B8DEF; }
+.filter-pill[data-tipo="naoconformidade"].active { background: rgba(197,123,240,.12); border-color: #C57BF0; color: #C57BF0; }
+.filter-pill[data-tipo="avaria"].active          { background: rgba(240,140,75,.12);  border-color: #F08C4B; color: #F08C4B; }
+.filter-pill[data-tipo="sobra"].active           { background: rgba(79,209,161,.12);  border-color: #4FD1A1; color: #4FD1A1; }
+.filter-pill[data-tipo="perdaev"].active         { background: rgba(126,138,240,.12); border-color: #7E8AF0; color: #7E8AF0; }
+.filter-pill[data-tipo="extravio"].active        { background: rgba(214,85,126,.12);  border-color: #D6557E; color: #D6557E; }
+.filter-pill[data-tipo="descarte"].active            { background: rgba(154,160,174,.12); border-color: #9AA0AE; color: #9AA0AE; }
+.filter-pill[data-tipo="inventario-estoque"].active  { background: rgba(61,184,196,.12);  border-color: #3DB8C4; color: #3DB8C4; }
+.filter-pill[data-tipo="inventario-paletes"].active  { background: rgba(201,162,39,.12);  border-color: #C9A227; color: #C9A227; }
+.filter-controls { display: flex; gap: 8px; }
+.filter-controls select { font-size: 12px; padding: 8px 30px 8px 11px; border-radius: 9px; width: auto; flex-shrink: 0; }
+.search-wrap { position: relative; flex: 1; min-width: 0; }
+.search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; stroke: var(--ink-3); fill: none; stroke-width: 2; pointer-events: none; }
+.search-wrap input { padding-left: 32px; border-radius: 9px; font-size: 12.5px; padding-top: 9px; padding-bottom: 9px; }
+
+/* ── Feed ── */
+.feed { display: flex; flex-direction: column; gap: 9px; max-height: 480px; overflow-y: auto; padding-right: 4px; }
+.feed::-webkit-scrollbar { width: 6px; }
+.feed::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+.empty { text-align: center; padding: 40px 16px; color: var(--ink-3); }
+.empty svg { width: 36px; height: 36px; stroke: var(--line); stroke-width: 1.4; fill: none; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
+.empty p { font-size: 13px; }
+
+/* ── Record cards ── */
+.rec { background: var(--panel-2); border: 1px solid var(--line-soft); border-left: 3px solid; border-radius: 11px; padding: 13px 15px; animation: fadeIn .22s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.rec-top { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; flex-wrap: wrap; }
+.tag { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 7px; white-space: nowrap; }
+.planta-chip { font-family: "JetBrains Mono"; font-size: 10.5px; color: var(--ink-2); background: var(--panel); border: 1px solid var(--line); padding: 2px 8px; border-radius: 6px; }
+.turno-chip { font-size: 10.5px; color: var(--ink-3); padding: 2px 7px; border-radius: 5px; background: rgba(255,255,255,.04); border: 1px solid var(--line-soft); }
+.rec-time { font-family: "JetBrains Mono"; font-size: 10.5px; color: var(--ink-3); white-space: nowrap; margin-left: auto; }
+.rec-del { background: none; border: 1px solid transparent; color: var(--ink-3); cursor: pointer; padding: 3px 8px; border-radius: 7px; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-family: inherit; font-weight: 500; transition: all .15s; flex-shrink: 0; }
+.rec-del:hover { color: var(--c-cancel); background: rgba(242,101,92,.1); }
+.rec-del.confirming { color: var(--c-cancel); background: rgba(242,101,92,.12); border-color: rgba(242,101,92,.3); }
+.rec-del svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+.rec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+@media (max-width: 480px) { .rec-grid { grid-template-columns: repeat(2, 1fr); } }
+.rec-grid .k { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .07em; }
+.rec-grid .v { font-size: 13px; font-weight: 500; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rec-grid .v.mono { font-family: "JetBrains Mono"; font-size: 12px; }
+.rec-obs { margin-top: 9px; font-size: 12.5px; color: var(--ink-2); border-top: 1px dashed var(--line); padding-top: 8px; }
+
+/* ── Print ── */
+/* ── Tabs ── */
+.tabs { display: flex; gap: 6px; margin-bottom: 22px; border-bottom: 1px solid var(--line); }
+.tab { appearance: none; cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--ink-3); background: none; border: none; padding: 11px 16px; display: inline-flex; align-items: center; gap: 8px; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; }
+.tab svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.tab:hover { color: var(--ink-2); }
+.tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+/* ── Audit grid ── */
+.grid-audit { display: flex; flex-direction: column; gap: 22px; }
+
+/* ── Dropzone ── */
+.dropzone { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 28px 20px; border: 1.5px dashed var(--line); border-radius: 12px; background: var(--panel-2); cursor: pointer; transition: border-color .15s, background .15s; text-align: center; }
+.dropzone:hover, .dropzone.drag { border-color: var(--accent); background: var(--accent-soft); }
+.dropzone svg { width: 26px; height: 26px; stroke: var(--ink-3); fill: none; stroke-width: 1.6; }
+.dz-main { font-size: 13.5px; font-weight: 500; color: var(--ink-2); }
+.dz-sub { font-size: 11.5px; color: var(--ink-3); }
+.fileinfo { margin-top: 10px; display: flex; align-items: center; gap: 10px; padding: 10px 13px; background: var(--panel-2); border: 1px solid var(--line-soft); border-radius: 10px; font-size: 13px; }
+.fileinfo .fi-name { font-weight: 500; }
+.fileinfo .fi-meta { color: var(--ink-3); font-size: 12px; margin-left: auto; font-family: "JetBrains Mono"; }
+
+/* ── Audit table ── */
+.aud-table-wrap { max-height: 460px; overflow: auto; border: 1px solid var(--line-soft); border-radius: 11px; margin-top: 4px; }
+.aud-table-wrap::-webkit-scrollbar { width: 7px; height: 7px; }
+.aud-table-wrap::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+.aud-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.aud-table th { position: sticky; top: 0; background: var(--panel); color: var(--ink-3); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; z-index: 1; }
+.aud-table td { padding: 9px 12px; border-bottom: 1px solid var(--line-soft); }
+.aud-table tbody tr:hover { background: var(--panel-2); }
+.aud-table .id-cell { font-family: "JetBrains Mono"; font-size: 12.5px; }
+.aud-table .sis-cell { font-family: "JetBrains Mono"; color: var(--ink-2); }
+.aud-table input.cont { width: 92px; background: var(--bg); border: 1px solid var(--line); color: var(--ink); border-radius: 8px; padding: 7px 9px; font-size: 13px; font-family: "JetBrains Mono"; }
+.aud-table input.cont:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,141,239,.18); }
+.aud-table .div-cell { font-family: "JetBrains Mono"; font-weight: 600; }
+.aud-status { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 7px; white-space: nowrap; }
+.aud-status.pendente { color: var(--ink-3); background: rgba(255,255,255,.05); }
+.aud-status.ok { color: var(--ok); background: rgba(79,209,161,.14); }
+.aud-status.divergente { color: var(--c-cancel); background: rgba(242,101,92,.14); }
+.div-pos { color: var(--ok); }
+.div-neg { color: var(--c-cancel); }
+.div-zero { color: var(--ink-3); }
+
+@media print {
+  body { background: white !important; color: #111 !important; -webkit-print-color-adjust: exact; }
+  .top, .card:first-child, .filter-bar, .stats-main, .stats-tipos, .btn { display: none !important; }
+  .grid { display: block !important; }
+  .card { box-shadow: none !important; border: none !important; }
+  .card-h { padding: 0 0 14px; border-bottom: 2px solid #ddd; margin-bottom: 14px; }
+  .feed { max-height: none !important; overflow: visible !important; }
+  .rec { background: white !important; border: 1px solid #ccc !important; border-left: 3px solid !important; break-inside: avoid; margin-bottom: 8px; }
+  .rec-del { display: none !important; }
+  .rec-grid .k, .rec-time, .turno-chip, .planta-chip { color: #555 !important; }
+  .tag { border: 1px solid; }
+}
 </style>
 </head>
 <body>
@@ -139,51 +244,65 @@
         <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
       </div>
       <div>
-        <h1>Gestão de pedidos</h1>
-        <p>Registro de divergências operacionais</p>
+        <h1>Controle de Estoque</h1>
+        <p>Petlove</p>
       </div>
     </div>
-    <div class="clock"><span class="pulse"></span><span id="clock">--:--:--</span></div>
+    <div class="top-right">
+      <button class="btn btn-ghost" id="btn-clear-all" title="Limpar todos os registros">
+        <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+        Limpar tudo
+      </button>
+      <button class="btn btn-ghost" id="btn-print">
+        <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+        Imprimir
+      </button>
+      <button class="btn btn-ghost" id="btn-export">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar CSV
+      </button>
+      <div class="clock"><span class="pulse"></span><span id="clock">--:--:--</span></div>
+    </div>
   </header>
 
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="ocorrencias">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Ocorrências
+    </button>
+    <button class="tab" data-tab="auditorias">
+      <svg viewBox="0 0 24 24"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Auditorias
+    </button>
+  </nav>
+
+  <section id="tab-ocorrencias" class="tab-panel">
   <div class="grid">
 
-    <!-- Form -->
+    <!-- ── Formulário ── -->
     <section class="card">
       <div class="card-h">
         <span class="eyebrow">Novo registro</span>
-        <h2>Lançar divergência</h2>
+        <h2>Registrar ocorrência</h2>
       </div>
       <div class="card-b">
 
         <div class="field">
-          <label>Tipo de divergência <span class="req">*</span></label>
-          <div class="tipos" id="tipos">
-            <button type="button" class="tipo" data-tipo="cancelamento" data-color="#F2655C" aria-pressed="false" style="--sel:#F2655C">
-              <span class="dot" style="background:#F2655C"></span>
-              <span class="tt">Cancelamento</span>
-              <span class="ts">Pedido cancelado</span>
-              <span class="check" style="background:#F2655C"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>
-            </button>
-            <button type="button" class="tipo" data-tipo="picking" data-color="#E0A93B" aria-pressed="false" style="--sel:#E0A93B">
-              <span class="dot" style="background:#E0A93B"></span>
-              <span class="tt">Divergência picking</span>
-              <span class="ts">Separação</span>
-              <span class="check" style="background:#E0A93B"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>
-            </button>
-            <button type="button" class="tipo" data-tipo="packing" data-color="#5B8DEF" aria-pressed="false" style="--sel:#5B8DEF">
-              <span class="dot" style="background:#5B8DEF"></span>
-              <span class="tt">Divergência packing</span>
-              <span class="ts">Embalagem</span>
-              <span class="check" style="background:#5B8DEF"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>
-            </button>
-            <button type="button" class="tipo" data-tipo="naoconformidade" data-color="#C57BF0" aria-pressed="false" style="--sel:#C57BF0">
-              <span class="dot" style="background:#C57BF0"></span>
-              <span class="tt">Não conformidade</span>
-              <span class="ts">NCF</span>
-              <span class="check" style="background:#C57BF0"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>
-            </button>
-          </div>
+          <label for="tipo">Tipo de ocorrência <span class="req">*</span></label>
+          <select id="tipo">
+            <option value="">Selecione a ocorrência</option>
+            <option value="cancelamento">Cancelamento</option>
+            <option value="picking">Divergência picking</option>
+            <option value="packing">Divergência packing</option>
+            <option value="naoconformidade">Não conformidade</option>
+            <option value="avaria">Avaria</option>
+            <option value="sobra">Sobra</option>
+            <option value="perdaev">Perda - EV</option>
+            <option value="extravio">Extravio</option>
+            <option value="descarte">Descarte</option>
+            <option value="inventario-estoque">Inventário de Estoque</option>
+            <option value="inventario-paletes">Inventário de Paletes</option>
+          </select>
         </div>
 
         <div class="row">
@@ -191,25 +310,68 @@
             <label for="planta">Planta <span class="req">*</span></label>
             <select id="planta">
               <option value="">Selecione</option>
-              <option value="PETPE">PETPE</option>
-              <option value="PETGO">PETGO</option>
-              <option value="PITAJ">PITAJ</option>
+              <option value="CD Cabo">CD Cabo</option>
+              <option value="CD Hidrolândia">CD Hidrolândia</option>
+              <option value="CD Itajaí">CD Itajaí</option>
+              <option value="Hub SP">Hub SP</option>
+              <option value="Hub RJ">Hub RJ</option>
+              <option value="Hub POA">Hub POA</option>
+              <option value="Hub BH">Hub BH</option>
+              <option value="Hub CWB">Hub CWB</option>
             </select>
           </div>
           <div class="field">
-            <label for="entrega">Número da entrega <span class="req">*</span></label>
-            <input id="entrega" class="mono" type="text" inputmode="numeric" placeholder="100482371" autocomplete="off">
+            <label for="turno">Turno <span class="req">*</span></label>
+            <select id="turno">
+              <option value="">Selecione</option>
+              <option value="1º">1º turno</option>
+              <option value="2º">2º turno</option>
+              <option value="3º">3º turno</option>
+            </select>
           </div>
         </div>
 
-        <div class="row">
+        <div class="row" id="row-entrega-colab">
+          <div class="field" id="field-entrega">
+            <label for="entrega">Nº Entrega <span class="req">*</span></label>
+            <input id="entrega" class="mono" type="text" inputmode="numeric" placeholder="100482371" autocomplete="off">
+          </div>
           <div class="field">
-            <label for="item">Item <span class="req">*</span></label>
+            <label for="colab">Colaborador <span class="req">*</span></label>
+            <input id="colab" type="text" placeholder="Nome do colaborador" list="colab-list" autocomplete="off">
+            <datalist id="colab-list"></datalist>
+          </div>
+        </div>
+
+        <div class="row-wide">
+          <div class="field">
+            <label for="item">Item (SKU) <span class="req">*</span></label>
             <input id="item" class="mono" type="text" placeholder="SKU-90231" autocomplete="off">
           </div>
           <div class="field">
-            <label for="colab">Colaborador responsável <span class="req">*</span></label>
-            <input id="colab" type="text" placeholder="Nome do colaborador" autocomplete="off">
+            <label for="qtd">Qtd <span class="req">*</span></label>
+            <input id="qtd" type="number" min="1" placeholder="1" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="extra" data-for="picking naoconformidade" hidden>
+          <div class="extra-head"><span class="extra-line"></span><span class="extra-tag" id="extra-tag">Campos adicionais</span><span class="extra-line"></span></div>
+          <div class="row">
+            <div class="field">
+              <label for="ex-data">Data <span class="req">*</span></label>
+              <input id="ex-data" type="date">
+            </div>
+            <div class="field">
+              <label for="ex-motivo">Motivo <span class="req">*</span></label>
+              <select id="ex-motivo">
+                <option value="">Selecione o motivo</option>
+                <option value="Avariado">Avariado</option>
+                <option value="Vencido">Vencido</option>
+                <option value="Faltando">Faltando</option>
+                <option value="Trocado">Trocado</option>
+                <option value="Local de OM">Local de OM</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -219,7 +381,10 @@
         </div>
 
         <div class="actions">
-          <button class="btn btn-primary" id="salvar">Registrar divergência</button>
+          <button class="btn btn-primary" id="salvar">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Registrar
+          </button>
           <button class="btn btn-ghost" id="limpar">Limpar</button>
           <span class="toast" id="toast"></span>
         </div>
@@ -227,140 +392,750 @@
       </div>
     </section>
 
-    <!-- Records -->
+    <!-- ── Registros ── -->
     <section class="card">
       <div class="card-h">
-        <span class="eyebrow">Sessão atual</span>
+        <span class="eyebrow">Dados salvos localmente</span>
         <h2>Registros</h2>
       </div>
       <div class="card-b">
-        <div class="stats">
-          <div class="stat"><div class="n" id="stat-total">0</div><div class="l">Total na sessão</div></div>
-          <div class="stat"><div class="n" id="stat-plantas">0</div><div class="l">Plantas envolvidas</div></div>
-        </div>
-        <div class="feed" id="feed">
-          <div class="empty" id="empty">
-            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-            <p>Nenhuma divergência registrada ainda</p>
+
+        <div class="stats-main">
+          <div class="stat">
+            <div class="n" id="stat-total">0</div>
+            <div class="l">Total registros</div>
+          </div>
+          <div class="stat">
+            <div class="n" id="stat-plantas">0</div>
+            <div class="l">Plantas envolvidas</div>
           </div>
         </div>
+        <div class="stats-tipos">
+          <div class="stat-sm" style="border-left-color:#F2655C">
+            <div class="n" id="cnt-cancelamento" style="color:#F2655C">0</div>
+            <div class="l">Cancelamento</div>
+          </div>
+          <div class="stat-sm" style="border-left-color:#E0A93B">
+            <div class="n" id="cnt-picking" style="color:#E0A93B">0</div>
+            <div class="l">Picking</div>
+          </div>
+          <div class="stat-sm" style="border-left-color:#5B8DEF">
+            <div class="n" id="cnt-packing" style="color:#5B8DEF">0</div>
+            <div class="l">Packing</div>
+          </div>
+          <div class="stat-sm" style="border-left-color:#C57BF0">
+            <div class="n" id="cnt-naoconformidade" style="color:#C57BF0">0</div>
+            <div class="l">NCF</div>
+          </div>
+          <div class="stat-sm" style="border-left-color:#F08C4B">
+            <div class="n" id="cnt-avaria" style="color:#F08C4B">0</div>
+            <div class="l">Avaria</div>
+          </div>
+          <div class="stat-sm" style="border-left-color:#4FD1A1">
+            <div class="n" id="cnt-sobra" style="color:#4FD1A1">0</div>
+            <div class="l">Sobra</div>
+          </div>
+          <div class="stat-sm" style="border-left-color:#7E8AF0">
+            <div class="n" id="cnt-perdaev" style="color:#7E8AF0">0</div>
+            <div class="l">Perda - EV</div>
+          </div>
+          <div class="stat-sm" style="border-left-color:#D6557E">
+            <div class="n" id="cnt-extravio" style="color:#D6557E">0</div>
+            <div class="l">Extravio</div>
+          </div>
+          <div class="stat-sm" style="border-left-color:#9AA0AE">
+            <div class="n" id="cnt-descarte" style="color:#9AA0AE">0</div>
+            <div class="l">Descarte</div>
+          </div>
+          <div class="stat-sm" style="border-left-color:#3DB8C4">
+            <div class="n" id="cnt-inventario-estoque" style="color:#3DB8C4">0</div>
+            <div class="l">Inv. Estoque</div>
+          </div>
+          <div class="stat-sm" style="border-left-color:#C9A227">
+            <div class="n" id="cnt-inventario-paletes" style="color:#C9A227">0</div>
+            <div class="l">Inv. Paletes</div>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="filter-pills" id="filter-pills">
+            <button class="filter-pill active" data-tipo="">Todos</button>
+            <button class="filter-pill" data-tipo="cancelamento">Cancelamento</button>
+            <button class="filter-pill" data-tipo="picking">Picking</button>
+            <button class="filter-pill" data-tipo="packing">Packing</button>
+            <button class="filter-pill" data-tipo="naoconformidade">NCF</button>
+            <button class="filter-pill" data-tipo="avaria">Avaria</button>
+            <button class="filter-pill" data-tipo="sobra">Sobra</button>
+            <button class="filter-pill" data-tipo="perdaev">Perda - EV</button>
+            <button class="filter-pill" data-tipo="extravio">Extravio</button>
+            <button class="filter-pill" data-tipo="descarte">Descarte</button>
+            <button class="filter-pill" data-tipo="inventario-estoque">Inv. Estoque</button>
+            <button class="filter-pill" data-tipo="inventario-paletes">Inv. Paletes</button>
+          </div>
+          <div class="filter-controls">
+            <select id="f-planta">
+              <option value="">Todas as plantas</option>
+              <option value="CD Cabo">CD Cabo</option>
+              <option value="CD Hidrolândia">CD Hidrolândia</option>
+              <option value="CD Itajaí">CD Itajaí</option>
+              <option value="Hub SP">Hub SP</option>
+              <option value="Hub RJ">Hub RJ</option>
+              <option value="Hub POA">Hub POA</option>
+              <option value="Hub BH">Hub BH</option>
+              <option value="Hub CWB">Hub CWB</option>
+            </select>
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" id="f-busca" placeholder="Entrega, item ou colaborador…">
+            </div>
+          </div>
+        </div>
+
+        <div class="feed" id="feed"></div>
+
       </div>
     </section>
 
   </div>
+  </section>
+
+  <section id="tab-auditorias" class="tab-panel" hidden>
+    <div class="grid-audit">
+
+      <!-- ── Setup da auditoria ── -->
+      <section class="card">
+        <div class="card-h">
+          <span class="eyebrow">Nova auditoria</span>
+          <h2>Iniciar auditoria</h2>
+        </div>
+        <div class="card-b">
+
+          <div class="field">
+            <label for="aud-tipo">Qual auditoria você deseja iniciar? <span class="req">*</span></label>
+            <select id="aud-tipo">
+              <option value="">Selecione a auditoria</option>
+              <option value="Armazenagem">Armazenagem</option>
+              <option value="Movimentação">Movimentação</option>
+              <option value="Recebimento">Recebimento</option>
+              <option value="Mono">Mono</option>
+              <option value="Perecíveis">Perecíveis</option>
+              <option value="Ocupação">Ocupação</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="aud-planta">Planta <span class="req">*</span></label>
+              <select id="aud-planta">
+                <option value="">Selecione</option>
+                <option value="CD Cabo">CD Cabo</option>
+                <option value="CD Hidrolândia">CD Hidrolândia</option>
+                <option value="CD Itajaí">CD Itajaí</option>
+                <option value="Hub SP">Hub SP</option>
+                <option value="Hub RJ">Hub RJ</option>
+                <option value="Hub POA">Hub POA</option>
+                <option value="Hub BH">Hub BH</option>
+                <option value="Hub CWB">Hub CWB</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="aud-colab">Auditor responsável <span class="req">*</span></label>
+              <input id="aud-colab" type="text" placeholder="Nome do auditor" list="colab-list" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Planilha base <span class="req">*</span></label>
+            <label class="dropzone" id="aud-dropzone" for="aud-file">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span class="dz-main">Clique para anexar ou arraste a planilha</span>
+              <span class="dz-sub">Formatos aceitos: .xlsx, .xls, .csv</span>
+            </label>
+            <input id="aud-file" type="file" accept=".xlsx,.xls,.csv" hidden>
+            <div id="aud-fileinfo" class="fileinfo" hidden></div>
+          </div>
+
+          <div id="aud-mapwrap" hidden>
+            <div class="extra-head"><span class="extra-line"></span><span class="extra-tag">Mapeamento de colunas</span><span class="extra-line"></span></div>
+            <div class="row">
+              <div class="field">
+                <label for="aud-col-id">Coluna identificador <span class="req">*</span></label>
+                <select id="aud-col-id"></select>
+              </div>
+              <div class="field">
+                <label for="aud-col-sis">Coluna qtd sistema <span class="req">*</span></label>
+                <select id="aud-col-sis"></select>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" id="aud-start" disabled>
+              <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Iniciar contagem
+            </button>
+            <button class="btn btn-ghost" id="aud-reset">Cancelar</button>
+            <span class="toast" id="aud-toast"></span>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Tela de contagem ── -->
+      <section class="card" id="aud-countcard" hidden>
+        <div class="card-h">
+          <span class="eyebrow" id="aud-count-eyebrow">Auditoria em andamento</span>
+          <h2 id="aud-count-title">Contagem</h2>
+        </div>
+        <div class="card-b">
+          <div class="stats-main" style="grid-template-columns:repeat(4,1fr)">
+            <div class="stat"><div class="n" id="aud-st-total">0</div><div class="l">Itens</div></div>
+            <div class="stat"><div class="n" id="aud-st-cont">0</div><div class="l">Contados</div></div>
+            <div class="stat"><div class="n" id="aud-st-div" style="color:var(--c-cancel)">0</div><div class="l">Divergentes</div></div>
+            <div class="stat"><div class="n" id="aud-st-ok" style="color:var(--ok)">0</div><div class="l">Conformes</div></div>
+          </div>
+
+          <div class="filter-bar">
+            <div class="filter-pills">
+              <button class="filter-pill active" data-audfilter="">Todos</button>
+              <button class="filter-pill" data-audfilter="pendente">Pendentes</button>
+              <button class="filter-pill" data-audfilter="divergente">Divergentes</button>
+              <button class="filter-pill" data-audfilter="ok">Conformes</button>
+            </div>
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" id="aud-busca" placeholder="Buscar item…">
+            </div>
+          </div>
+
+          <div class="aud-table-wrap">
+            <table class="aud-table">
+              <thead>
+                <tr><th>Identificador</th><th>Qtd sistema</th><th>Qtd contada</th><th>Diverg.</th><th>Status</th></tr>
+              </thead>
+              <tbody id="aud-tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="actions" style="margin-top:16px">
+            <button class="btn btn-primary" id="aud-finish">
+              <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Finalizar e exportar
+            </button>
+            <button class="btn btn-ghost" id="aud-cancel-count">Descartar</button>
+            <span class="toast" id="aud-toast2"></span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </section>
+
 </div>
 
 <script>
-(function(){
-  var META = {
-    cancelamento:    {label:"Cancelamento",        color:"#F2655C", bg:"rgba(242,101,92,.14)"},
-    picking:         {label:"Divergência picking", color:"#E0A93B", bg:"rgba(224,169,59,.14)"},
-    packing:         {label:"Divergência packing", color:"#5B8DEF", bg:"rgba(91,141,239,.14)"},
-    naoconformidade: {label:"Não conformidade",    color:"#C57BF0", bg:"rgba(197,123,240,.14)"}
+(function () {
+  'use strict';
+
+  const STORAGE_KEY = 'divs-petlove-v1';
+  const META = {
+    cancelamento:    { label: 'Cancelamento',        color: '#F2655C', bg: 'rgba(242,101,92,.14)' },
+    picking:         { label: 'Divergência picking', color: '#E0A93B', bg: 'rgba(224,169,59,.14)' },
+    packing:         { label: 'Divergência packing', color: '#5B8DEF', bg: 'rgba(91,141,239,.14)' },
+    naoconformidade: { label: 'Não conformidade',    color: '#C57BF0', bg: 'rgba(197,123,240,.14)' },
+    avaria:          { label: 'Avaria',              color: '#F08C4B', bg: 'rgba(240,140,75,.14)' },
+    sobra:           { label: 'Sobra',               color: '#4FD1A1', bg: 'rgba(79,209,161,.14)' },
+    perdaev:         { label: 'Perda - EV',          color: '#7E8AF0', bg: 'rgba(126,138,240,.14)' },
+    extravio:        { label: 'Extravio',            color: '#D6557E', bg: 'rgba(214,85,126,.14)' },
+    descarte:            { label: 'Descarte',               color: '#9AA0AE', bg: 'rgba(154,160,174,.14)' },
+    'inventario-estoque':{ label: 'Inventário de Estoque',  color: '#3DB8C4', bg: 'rgba(61,184,196,.14)' },
+    'inventario-paletes':{ label: 'Inventário de Paletes',  color: '#C9A227', bg: 'rgba(201,162,39,.14)' }
   };
-  var registros = [];
-  var tipoSel = null;
+  const EXTRA_TIPOS = ['picking', 'naoconformidade'];
 
-  // clock
-  function tick(){
-    var d = new Date();
-    document.getElementById("clock").textContent = d.toLocaleTimeString("pt-BR");
+  let registros   = [];
+  let tipoSel     = null;
+  let filtroTipo  = '';
+  let filtroPlt   = '';
+  let busca       = '';
+  let pendingDel  = null;
+
+  /* ── Storage ── */
+  const save = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(registros)); } catch (_) {} };
+  const load = () => { try { const r = localStorage.getItem(STORAGE_KEY); if (r) registros = JSON.parse(r); } catch (_) { registros = []; } };
+
+  /* ── Clock ── */
+  const tick = () => document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR');
+  tick(); setInterval(tick, 1000);
+
+  /* ── Relative time ── */
+  function relTime(iso) {
+    const d = new Date(iso), now = new Date();
+    const yest = new Date(now); yest.setDate(now.getDate() - 1);
+    const t = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    if (d.toDateString() === now.toDateString())  return 'hoje ' + t;
+    if (d.toDateString() === yest.toDateString()) return 'ontem ' + t;
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + t;
   }
-  tick(); setInterval(tick,1000);
 
-  // tipo buttons
-  document.querySelectorAll(".tipo").forEach(function(b){
-    b.addEventListener("click", function(){
-      var was = b.getAttribute("aria-pressed")==="true";
-      document.querySelectorAll(".tipo").forEach(function(x){x.setAttribute("aria-pressed","false")});
-      if(was){ tipoSel=null; }
-      else { b.setAttribute("aria-pressed","true"); tipoSel=b.dataset.tipo; }
-    });
+  /* ── Escape ── */
+  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  /* ── Autocomplete colaboradores ── */
+  function updateColabList() {
+    const names = [...new Set(registros.map(r => r.colab).filter(Boolean))];
+    document.getElementById('colab-list').innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
+  }
+
+  /* ── Tipo selection ── */
+  const SEM_ENTREGA = ['avaria', 'perdaev', 'descarte', 'inventario-estoque', 'inventario-paletes'];
+  function toggleExtras() {
+    const show = tipoSel && EXTRA_TIPOS.includes(tipoSel);
+    document.querySelector('.extra').hidden = !show;
+    if (show) {
+      document.getElementById('extra-tag').textContent =
+        tipoSel === 'picking' ? 'Campos de picking' : 'Campos de não conformidade';
+    }
+    // Nº Entrega não se aplica a Avaria e Perda - EV
+    const semEntrega = tipoSel && SEM_ENTREGA.includes(tipoSel);
+    document.getElementById('field-entrega').hidden = semEntrega;
+    document.getElementById('row-entrega-colab').classList.toggle('no-entrega', !!semEntrega);
+    if (semEntrega) document.getElementById('entrega').value = '';
+  }
+  document.getElementById('tipo').addEventListener('change', e => {
+    tipoSel = e.target.value || null;
+    toggleExtras();
   });
 
-  var toastT;
-  function toast(msg, ok){
-    var t = document.getElementById("toast");
+  /* ── Toast ── */
+  let toastT;
+  function toast(msg, ok) {
+    const t = document.getElementById('toast');
     clearTimeout(toastT);
     t.textContent = msg;
-    t.className = "toast show " + (ok?"ok":"err");
-    if(ok) toastT = setTimeout(function(){ t.classList.remove("show"); },2800);
+    t.className = 'toast show ' + (ok ? 'ok' : 'err');
+    if (ok) toastT = setTimeout(() => t.classList.remove('show'), 2800);
   }
 
-  function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+  /* ── Render ── */
+  function render() {
+    // Stats globais
+    document.getElementById('stat-total').textContent   = registros.length;
+    document.getElementById('stat-plantas').textContent = new Set(registros.map(r => r.planta)).size;
+    ['cancelamento', 'picking', 'packing', 'naoconformidade', 'avaria', 'sobra', 'perdaev', 'extravio', 'descarte', 'inventario-estoque', 'inventario-paletes'].forEach(k => {
+      const el = document.getElementById('cnt-' + k);
+      if (el) el.textContent = registros.filter(r => r.tipo === k).length;
+    });
 
-  function render(){
-    var feed = document.getElementById("feed");
-    document.getElementById("stat-total").textContent = registros.length;
-    document.getElementById("stat-plantas").textContent = new Set(registros.map(function(r){return r.planta})).size;
+    // Feed com filtros
+    let vis = registros;
+    if (filtroTipo) vis = vis.filter(r => r.tipo === filtroTipo);
+    if (filtroPlt)  vis = vis.filter(r => r.planta === filtroPlt);
+    if (busca) {
+      const q = busca.toLowerCase();
+      vis = vis.filter(r =>
+        (r.entrega || '').toLowerCase().includes(q) ||
+        (r.item || '').toLowerCase().includes(q) ||
+        (r.colab || '').toLowerCase().includes(q)
+      );
+    }
 
-    if(registros.length===0){
-      feed.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><p>Nenhuma divergência registrada ainda</p></div>';
+    const feed = document.getElementById('feed');
+    if (!vis.length) {
+      const msg = registros.length === 0
+        ? 'Nenhuma divergência registrada ainda'
+        : 'Nenhum resultado para os filtros aplicados';
+      feed.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><p>${msg}</p></div>`;
       return;
     }
-    feed.innerHTML = registros.map(function(r){
-      var m = META[r.tipo];
-      return '<div class="rec" style="border-left-color:'+m.color+'">'
-        + '<div class="rec-top">'
-        +   '<span class="tag" style="color:'+m.color+';background:'+m.bg+'">'+m.label+'</span>'
-        +   '<span class="planta-chip">'+r.planta+'</span>'
-        +   '<span class="rec-time">'+r.hora+'</span>'
-        +   '<button class="rec-del" data-id="'+r.id+'" aria-label="Remover"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'
-        + '</div>'
-        + '<div class="rec-grid">'
-        +   '<div><div class="k">Entrega</div><div class="v mono">'+esc(r.entrega)+'</div></div>'
-        +   '<div><div class="k">Item</div><div class="v mono">'+esc(r.item)+'</div></div>'
-        +   '<div><div class="k">Responsável</div><div class="v">'+esc(r.colab)+'</div></div>'
-        + '</div>'
-        + (r.obs ? '<div class="rec-obs">'+esc(r.obs)+'</div>' : '')
-        + '</div>';
-    }).join("");
 
-    feed.querySelectorAll(".rec-del").forEach(function(btn){
-      btn.addEventListener("click", function(){
-        var id = btn.dataset.id;
-        registros = registros.filter(function(r){return String(r.id)!==String(id)});
-        render();
-      });
-    });
+    feed.innerHTML = vis.map(r => {
+      const m = META[r.tipo];
+      const extraRow = (r.exData || r.exMotivo) ? `
+        <div class="rec-grid" style="margin-top:8px">
+          <div><div class="k">Data</div><div class="v mono">${esc(r.exData ? r.exData.split('-').reverse().join('/') : '—')}</div></div>
+          <div><div class="k">Motivo</div><div class="v">${esc(r.exMotivo || '—')}</div></div>
+        </div>` : '';
+      return `<div class="rec" style="border-left-color:${m.color}">
+        <div class="rec-top">
+          <span class="tag" style="color:${m.color};background:${m.bg}">${m.label}</span>
+          <span class="planta-chip">${esc(r.planta)}</span>
+          ${r.turno ? `<span class="turno-chip">${esc(r.turno)}</span>` : ''}
+          <span class="rec-time">${relTime(r.iso)}</span>
+          <button class="rec-del" data-id="${r.id}" aria-label="Remover">
+            <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+            Excluir
+          </button>
+        </div>
+        <div class="rec-grid">
+          <div><div class="k">Entrega</div><div class="v mono">${esc(r.entrega || '—')}</div></div>
+          <div><div class="k">Item</div><div class="v mono">${esc(r.item)}</div></div>
+          <div><div class="k">Qtd</div><div class="v">${esc(r.qtd || '—')}</div></div>
+          <div><div class="k">Responsável</div><div class="v">${esc(r.colab)}</div></div>
+        </div>
+        ${extraRow}
+        ${r.obs ? `<div class="rec-obs">${esc(r.obs)}</div>` : ''}
+      </div>`;
+    }).join('');
   }
 
-  document.getElementById("salvar").addEventListener("click", function(){
-    var planta = document.getElementById("planta").value;
-    var entrega = document.getElementById("entrega").value.trim();
-    var item = document.getElementById("item").value.trim();
-    var colab = document.getElementById("colab").value.trim();
-    var obs = document.getElementById("obs").value.trim();
+  /* ── Delete com confirmação (event delegation) ── */
+  document.getElementById('feed').addEventListener('click', e => {
+    const btn = e.target.closest('.rec-del');
+    if (!btn) { resetDel(); return; }
+    e.stopPropagation();
+    if (btn.classList.contains('confirming')) {
+      registros = registros.filter(r => r.id !== btn.dataset.id);
+      save(); render(); updateColabList(); pendingDel = null;
+    } else {
+      resetDel();
+      btn.classList.add('confirming');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Confirmar?';
+      pendingDel = btn;
+    }
+  });
+  document.addEventListener('click', () => resetDel());
+  function resetDel() {
+    if (!pendingDel) return;
+    pendingDel.classList.remove('confirming');
+    pendingDel.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg> Excluir';
+    pendingDel = null;
+  }
 
-    if(!tipoSel) return toast("Selecione o tipo de divergência", false);
-    if(!planta)  return toast("Selecione a planta", false);
-    if(!entrega) return toast("Informe o número da entrega", false);
-    if(!item)    return toast("Informe o item", false);
-    if(!colab)   return toast("Informe o colaborador", false);
+  /* ── Salvar ── */
+  document.getElementById('salvar').addEventListener('click', () => {
+    const planta  = document.getElementById('planta').value;
+    const turno   = document.getElementById('turno').value;
+    const entrega = document.getElementById('entrega').value.trim();
+    const colab   = document.getElementById('colab').value.trim();
+    const item    = document.getElementById('item').value.trim();
+    const qtd     = document.getElementById('qtd').value.trim();
+    const obs     = document.getElementById('obs').value.trim();
 
+    if (!tipoSel) return toast('Selecione o tipo de ocorrência', false);
+    if (!planta)  return toast('Selecione a planta', false);
+    if (!turno)   return toast('Selecione o turno', false);
+    if (!SEM_ENTREGA.includes(tipoSel) && !entrega) return toast('Informe o número da entrega', false);
+    if (!colab)   return toast('Informe o colaborador', false);
+    if (!item)    return toast('Informe o item', false);
+    if (!qtd)     return toast('Informe a quantidade', false);
+
+    let exData = '', exMotivo = '';
+    if (EXTRA_TIPOS.includes(tipoSel)) {
+      exData   = document.getElementById('ex-data').value;
+      exMotivo = document.getElementById('ex-motivo').value;
+      if (!exData)   return toast('Informe a data', false);
+      if (!exMotivo) return toast('Informe o motivo', false);
+    }
+
+    const now = new Date();
     registros.unshift({
-      id: Date.now()+"-"+Math.random().toString(36).slice(2,6),
-      tipo: tipoSel, planta:planta, entrega:entrega, item:item, colab:colab, obs:obs,
-      hora: new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})
+      id:      now.getTime() + '-' + Math.random().toString(36).slice(2, 6),
+      iso:     now.toISOString(),
+      data:    now.toLocaleDateString('pt-BR'),
+      hora:    now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      tipo:    tipoSel,
+      planta, turno, entrega, colab, item, qtd, obs,
+      exData, exMotivo
     });
-    render();
-    toast("Divergência registrada", true);
 
-    document.getElementById("entrega").value="";
-    document.getElementById("item").value="";
-    document.getElementById("colab").value="";
-    document.getElementById("obs").value="";
-    document.getElementById("entrega").focus();
+    save(); render(); updateColabList();
+    toast('Divergência registrada ✓', true);
+
+    // Mantém: planta, turno, tipo selecionado
+    // Limpa: campos de entrada
+    ['entrega', 'item', 'qtd', 'colab', 'obs', 'ex-data', 'ex-motivo'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('entrega').focus();
   });
 
-  document.getElementById("limpar").addEventListener("click", function(){
-    ["planta","entrega","item","colab","obs"].forEach(function(id){document.getElementById(id).value="";});
-    document.querySelectorAll(".tipo").forEach(function(x){x.setAttribute("aria-pressed","false")});
-    tipoSel=null;
-    document.getElementById("toast").classList.remove("show");
+  /* ── Limpar formulário ── */
+  document.getElementById('limpar').addEventListener('click', () => {
+    ['tipo', 'planta', 'turno', 'entrega', 'item', 'qtd', 'colab', 'obs', 'ex-data', 'ex-motivo'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    tipoSel = null;
+    toggleExtras();
+    document.getElementById('toast').classList.remove('show');
   });
 
-  render();
+  /* ── Limpar tudo (com confirmação) ── */
+  document.getElementById('btn-clear-all').addEventListener('click', () => {
+    const btn = document.getElementById('btn-clear-all');
+    if (btn.dataset.confirm === 'true') {
+      registros = []; save(); render(); updateColabList();
+      btn.dataset.confirm = 'false';
+      btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg> Limpar tudo`;
+      toast('Registros apagados', true);
+    } else {
+      btn.dataset.confirm = 'true';
+      btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Confirmar?`;
+      setTimeout(() => {
+        btn.dataset.confirm = 'false';
+        btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg> Limpar tudo`;
+      }, 4000);
+    }
+  });
+
+  /* ── Filtros ── */
+  document.querySelectorAll('.filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      filtroTipo = pill.dataset.tipo;
+      render();
+    });
+  });
+  document.getElementById('f-planta').addEventListener('change', e => { filtroPlt = e.target.value; render(); });
+  document.getElementById('f-busca').addEventListener('input', e => { busca = e.target.value.trim(); render(); });
+
+  /* ── Exportar CSV ── */
+  document.getElementById('btn-export').addEventListener('click', () => {
+    if (!registros.length) return toast('Nenhum registro para exportar', false);
+    const header = ['Data registro', 'Hora', 'Turno', 'Planta', 'Tipo', 'Entrega', 'Item', 'Quantidade', 'Colaborador', 'Data ocorrência', 'Motivo', 'Observação'];
+    const rows = registros.map(r => [
+      r.data, r.hora, r.turno || '', r.planta,
+      META[r.tipo].label, r.entrega, r.item, r.qtd || '', r.colab,
+      r.exData ? r.exData.split('-').reverse().join('/') : '', r.exMotivo || '', r.obs || ''
+    ]);
+    const csv = [header, ...rows]
+      .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), { href: url, download: `divergencias_${new Date().toISOString().slice(0, 10)}.csv` });
+    a.click();
+    URL.revokeObjectURL(url);
+    toast(`CSV exportado — ${registros.length} registros`, true);
+  });
+
+  /* ── Imprimir ── */
+  document.getElementById('btn-print').addEventListener('click', () => window.print());
+
+  /* ── Init ── */
+  /* ── Tabs ── */
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const target = tab.dataset.tab;
+      document.getElementById('tab-ocorrencias').hidden = target !== 'ocorrencias';
+      document.getElementById('tab-auditorias').hidden  = target !== 'auditorias';
+    });
+  });
+
+  /* ══════════════ AUDITORIAS ══════════════ */
+  const AUD_KEY = 'auditorias-petlove-v1';
+  let audRows = [];      // { id, sistema, contado }
+  let audCols = [];      // nomes de colunas detectadas
+  let audRaw = [];       // linhas brutas como objetos
+  let audFilter = '';
+  let audBusca = '';
+  let audFileName = '';
+
+  function audToast(msg, ok, which) {
+    const t = document.getElementById(which || 'aud-toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + (ok ? 'ok' : 'err');
+    if (ok) setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function checkStartReady() {
+    const ok = document.getElementById('aud-tipo').value &&
+               document.getElementById('aud-planta').value &&
+               document.getElementById('aud-colab').value.trim() &&
+               audRaw.length &&
+               document.getElementById('aud-col-id').value &&
+               document.getElementById('aud-col-sis').value;
+    document.getElementById('aud-start').disabled = !ok;
+  }
+  ['aud-tipo', 'aud-planta', 'aud-colab', 'aud-col-id', 'aud-col-sis'].forEach(id => {
+    document.getElementById(id).addEventListener('input', checkStartReady);
+    document.getElementById(id).addEventListener('change', checkStartReady);
+  });
+
+  /* ── Leitura de planilha ── */
+  const dz = document.getElementById('aud-dropzone');
+  const fileInput = document.getElementById('aud-file');
+  ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+  dz.addEventListener('drop', e => { if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+  function handleFile(file) {
+    const ok = /\.(xlsx|xls|csv)$/i.test(file.name);
+    if (!ok) return audToast('Formato inválido. Use .xlsx, .xls ou .csv', false);
+    audFileName = file.name;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        audRaw = XLSX.utils.sheet_to_json(ws, { defval: '' });
+        if (!audRaw.length) return audToast('A planilha está vazia', false);
+        audCols = Object.keys(audRaw[0]);
+
+        // file info
+        const fi = document.getElementById('aud-fileinfo');
+        fi.hidden = false;
+        fi.innerHTML = `<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--ok);fill:none;stroke-width:2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span class="fi-name">${esc(file.name)}</span>
+          <span class="fi-meta">${audRaw.length} linhas · ${audCols.length} colunas</span>`;
+
+        // popular selects de mapeamento + heurística
+        const idGuess  = audCols.find(c => /sku|item|produto|c[óo]digo|endere[çc]o|palete|id/i.test(c)) || audCols[0];
+        const sisGuess = audCols.find(c => /sistema|estoque|saldo|teor|qtd|quant/i.test(c)) || audCols[1] || audCols[0];
+        const opts = audCols.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+        const selId = document.getElementById('aud-col-id');
+        const selSis = document.getElementById('aud-col-sis');
+        selId.innerHTML = opts; selSis.innerHTML = opts;
+        selId.value = idGuess; selSis.value = sisGuess;
+        document.getElementById('aud-mapwrap').hidden = false;
+
+        checkStartReady();
+        audToast('Planilha carregada ✓', true);
+      } catch (err) {
+        audToast('Erro ao ler a planilha', false);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  /* ── Iniciar contagem ── */
+  document.getElementById('aud-start').addEventListener('click', () => {
+    const colId = document.getElementById('aud-col-id').value;
+    const colSis = document.getElementById('aud-col-sis').value;
+    audRows = audRaw.map((r, i) => ({
+      idx: i,
+      id: String(r[colId] ?? '').trim() || '(vazio)',
+      sistema: Number(String(r[colSis] ?? '').replace(',', '.')) || 0,
+      contado: null
+    }));
+    document.getElementById('aud-count-title').textContent =
+      'Contagem · ' + document.getElementById('aud-tipo').value;
+    document.getElementById('aud-count-eyebrow').textContent =
+      document.getElementById('aud-planta').value + ' · ' + document.getElementById('aud-colab').value.trim();
+    document.getElementById('aud-countcard').hidden = false;
+    audFilter = ''; audBusca = '';
+    document.querySelectorAll('[data-audfilter]').forEach(p => p.classList.toggle('active', p.dataset.audfilter === ''));
+    document.getElementById('aud-busca').value = '';
+    renderAud();
+    document.getElementById('aud-countcard').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  function statusOf(row) {
+    if (row.contado === null || row.contado === '') return 'pendente';
+    return Number(row.contado) === row.sistema ? 'ok' : 'divergente';
+  }
+
+  function renderAud() {
+    const total = audRows.length;
+    const cont = audRows.filter(r => r.contado !== null && r.contado !== '').length;
+    const div = audRows.filter(r => statusOf(r) === 'divergente').length;
+    const ok = audRows.filter(r => statusOf(r) === 'ok').length;
+    document.getElementById('aud-st-total').textContent = total;
+    document.getElementById('aud-st-cont').textContent = cont;
+    document.getElementById('aud-st-div').textContent = div;
+    document.getElementById('aud-st-ok').textContent = ok;
+
+    let vis = audRows;
+    if (audFilter) vis = vis.filter(r => statusOf(r) === audFilter);
+    if (audBusca) { const q = audBusca.toLowerCase(); vis = vis.filter(r => r.id.toLowerCase().includes(q)); }
+
+    const tbody = document.getElementById('aud-tbody');
+    if (!vis.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-3);padding:28px">Nenhum item para o filtro</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = vis.map(r => {
+      const st = statusOf(r);
+      const diff = (r.contado === null || r.contado === '') ? null : Number(r.contado) - r.sistema;
+      const diffCls = diff === null ? 'div-zero' : diff > 0 ? 'div-pos' : diff < 0 ? 'div-neg' : 'div-zero';
+      const diffTxt = diff === null ? '—' : (diff > 0 ? '+' + diff : diff);
+      const stLabel = { pendente: 'Pendente', ok: 'Conforme', divergente: 'Divergente' }[st];
+      return `<tr>
+        <td class="id-cell">${esc(r.id)}</td>
+        <td class="sis-cell">${r.sistema}</td>
+        <td><input class="cont" type="number" data-idx="${r.idx}" value="${r.contado === null ? '' : r.contado}" placeholder="—"></td>
+        <td class="div-cell ${diffCls}">${diffTxt}</td>
+        <td><span class="aud-status ${st}">${stLabel}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('aud-tbody').addEventListener('input', e => {
+    const inp = e.target.closest('input.cont');
+    if (!inp) return;
+    const idx = Number(inp.dataset.idx);
+    const row = audRows.find(r => r.idx === idx);
+    row.contado = inp.value === '' ? null : Number(inp.value);
+    // atualiza só stats + a célula da linha sem re-render completo (mantém foco)
+    const tr = inp.closest('tr');
+    const diff = row.contado === null ? null : row.contado - row.sistema;
+    const st = statusOf(row);
+    const diffCell = tr.querySelector('.div-cell');
+    diffCell.className = 'div-cell ' + (diff === null ? 'div-zero' : diff > 0 ? 'div-pos' : diff < 0 ? 'div-neg' : 'div-zero');
+    diffCell.textContent = diff === null ? '—' : (diff > 0 ? '+' + diff : diff);
+    const stCell = tr.querySelector('.aud-status');
+    stCell.className = 'aud-status ' + st;
+    stCell.textContent = { pendente: 'Pendente', ok: 'Conforme', divergente: 'Divergente' }[st];
+    // stats
+    document.getElementById('aud-st-cont').textContent = audRows.filter(r => r.contado !== null && r.contado !== '').length;
+    document.getElementById('aud-st-div').textContent = audRows.filter(r => statusOf(r) === 'divergente').length;
+    document.getElementById('aud-st-ok').textContent = audRows.filter(r => statusOf(r) === 'ok').length;
+  });
+
+  document.querySelectorAll('[data-audfilter]').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('[data-audfilter]').forEach(x => x.classList.remove('active'));
+      p.classList.add('active');
+      audFilter = p.dataset.audfilter;
+      renderAud();
+    });
+  });
+  document.getElementById('aud-busca').addEventListener('input', e => { audBusca = e.target.value.trim(); renderAud(); });
+
+  /* ── Finalizar e exportar ── */
+  document.getElementById('aud-finish').addEventListener('click', () => {
+    const pend = audRows.filter(r => statusOf(r) === 'pendente').length;
+    if (pend > 0 && !confirm(`Há ${pend} item(ns) sem contagem. Exportar mesmo assim?`)) return;
+    const tipo = document.getElementById('aud-tipo').value;
+    const planta = document.getElementById('aud-planta').value;
+    const colab = document.getElementById('aud-colab').value.trim();
+    const header = ['Auditoria', 'Planta', 'Auditor', 'Data', 'Identificador', 'Qtd sistema', 'Qtd contada', 'Divergência', 'Status'];
+    const now = new Date().toLocaleString('pt-BR');
+    const rows = audRows.map(r => {
+      const st = statusOf(r);
+      const diff = (r.contado === null) ? '' : r.contado - r.sistema;
+      const stLabel = { pendente: 'Pendente', ok: 'Conforme', divergente: 'Divergente' }[st];
+      return [tipo, planta, colab, now, r.id, r.sistema, r.contado === null ? '' : r.contado, diff, stLabel];
+    });
+    const csv = [header, ...rows].map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), { href: url, download: `auditoria_${tipo}_${new Date().toISOString().slice(0, 10)}.csv` });
+    a.click(); URL.revokeObjectURL(url);
+    audToast(`Auditoria exportada — ${audRows.length} itens`, true, 'aud-toast2');
+  });
+
+  function resetAud() {
+    audRows = []; audCols = []; audRaw = []; audFileName = '';
+    document.getElementById('aud-tipo').value = '';
+    document.getElementById('aud-planta').value = '';
+    document.getElementById('aud-colab').value = '';
+    document.getElementById('aud-file').value = '';
+    document.getElementById('aud-fileinfo').hidden = true;
+    document.getElementById('aud-mapwrap').hidden = true;
+    document.getElementById('aud-countcard').hidden = true;
+    document.getElementById('aud-start').disabled = true;
+  }
+  document.getElementById('aud-reset').addEventListener('click', resetAud);
+  document.getElementById('aud-cancel-count').addEventListener('click', () => {
+    if (confirm('Descartar esta contagem?')) document.getElementById('aud-countcard').hidden = true;
+  });
+
+  load(); updateColabList(); render();
 })();
 </script>
 </body>
