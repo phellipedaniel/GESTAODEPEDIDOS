@@ -1,40 +1,73 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Controle de Estoque · Petlove</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root {
-  --bg: #0E1117;
-  --panel: #161B24;
-  --panel-2: #1C2230;
-  --line: #262E3D;
-  --line-soft: #1F2633;
-  --ink: #F2F5FA;
-  --ink-2: #A7B1C2;
-  --ink-3: #6B7587;
-  --accent: #5B8DEF;
-  --accent-soft: #1A2540;
-  --lime: #B9F227;
-  --c-cancel: #F2655C;
-  --c-pick: #E0A93B;
-  --c-pack: #5B8DEF;
-  --c-ncf: #C57BF0;
-  --ok: #4FD1A1;
-  --radius: 14px;
-  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 12px 40px rgba(0,0,0,.4);
+@font-face { font-family: "Gooper"; src: url("fonts/Gooper-SemiBold.otf") format("opentype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Gooper"; src: url("fonts/Gooper-Bold.otf") format("opentype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Gooper"; src: url("fonts/Gooper-Black.otf") format("opentype"); font-weight: 800 900; font-style: normal; font-display: swap; }
+:root, [data-theme="light"] {
+  --bg: #F4ECDD;
+  --panel: #FFFFFF;
+  --panel-2: #FBF7F0;
+  --line: #EBE2D3;
+  --line-soft: #F1EADD;
+  --ink: #322D25;
+  --ink-2: #675D4C;
+  --ink-3: #93846C;
+  --accent: #4E2096;
+  --accent-soft: #F1EAFB;
+  --primary: #4E2096;
+  --primary-strong: #3A1574;
+  --on-primary: #FFFFFF;
+  --c-cancel: #EA534A;
+  --ok: #49A971;
+  --focus-ring: rgba(78,32,150,.18);
+  --chip-bg: rgba(50,45,37,.05);
+  --scheme: light;
+  --glow-a: rgba(78,32,150,.07);
+  --glow-b: rgba(234,83,74,.05);
+  --radius: 16px;
+  --shadow: 0 1px 2px rgba(60,35,18,.05), 0 12px 32px rgba(60,35,18,.08);
 }
+[data-theme="dark"] {
+  --bg: #1A1426;
+  --panel: #241C33;
+  --panel-2: #2C2340;
+  --line: #392E50;
+  --line-soft: #2E2542;
+  --ink: #F4EFFA;
+  --ink-2: #C2B6D6;
+  --ink-3: #897E9E;
+  --accent: #B79BE8;
+  --accent-soft: #2E2348;
+  --primary: #8B5CF6;
+  --primary-strong: #7C4DEE;
+  --on-primary: #FFFFFF;
+  --c-cancel: #F2655C;
+  --ok: #4FD1A1;
+  --focus-ring: rgba(183,155,232,.22);
+  --chip-bg: rgba(255,255,255,.05);
+  --scheme: dark;
+  --glow-a: rgba(139,92,246,.12);
+  --glow-b: rgba(234,83,74,.06);
+  --radius: 16px;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 12px 40px rgba(0,0,0,.45);
+}
+html { transition: background .2s ease; }
+body, .card, .stat, .stat-sm, .tipo, input, select, textarea, .btn, .filter-pill, .clock { transition: background .2s ease, border-color .2s ease, color .2s ease; }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body {
   background:
-    radial-gradient(900px 500px at 88% -10%, rgba(91,141,239,.10), transparent 60%),
-    radial-gradient(700px 600px at -5% 110%, rgba(185,242,39,.06), transparent 55%),
+    radial-gradient(900px 500px at 88% -10%, var(--glow-a), transparent 60%),
+    radial-gradient(700px 600px at -5% 110%, var(--glow-b), transparent 55%),
     var(--bg);
   color: var(--ink);
   font-family: "Inter", system-ui, sans-serif;
@@ -47,12 +80,15 @@ body {
 /* ── Topbar ── */
 .top { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 28px; flex-wrap: wrap; }
 .brand { display: flex; align-items: center; gap: 13px; }
-.mark { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(150deg, var(--accent), #3A6BD0); display: grid; place-items: center; box-shadow: 0 6px 20px rgba(91,141,239,.35); flex-shrink: 0; }
+.mark { width: 42px; height: 42px; border-radius: 14px; background: linear-gradient(150deg, var(--primary), var(--primary-strong)); display: grid; place-items: center; box-shadow: 0 6px 18px rgba(78,32,150,.30); flex-shrink: 0; }
 .mark svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 1.8; }
-.brand h1 { font-family: "Space Grotesk"; font-size: 20px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
+.brand h1 { font-family: "Gooper", "Inter"; font-size: 21px; font-weight: 700; letter-spacing: -.01em; line-height: 1.1; }
 .brand p { font-size: 12.5px; color: var(--ink-3); }
+.brand-logo { color: var(--accent); display: flex; align-items: center; }
+.brand-logo svg { height: 26px; width: auto; display: block; }
+.brand-divider { width: 1px; height: 32px; background: var(--line); border-radius: 1px; }
 .top-right { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
-.clock { font-family: "JetBrains Mono"; font-size: 12.5px; color: var(--ink-2); background: var(--panel); border: 1px solid var(--line); padding: 8px 14px; border-radius: 999px; display: flex; align-items: center; gap: 8px; }
+.clock { font-family: "Roboto Mono"; font-size: 12.5px; color: var(--ink-2); background: var(--panel); border: 1px solid var(--line); padding: 8px 14px; border-radius: 999px; display: flex; align-items: center; gap: 8px; }
 .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); animation: pulse 2.4s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(79,209,161,.5); } 70% { box-shadow: 0 0 0 8px rgba(79,209,161,0); } 100% { box-shadow: 0 0 0 0 rgba(79,209,161,0); } }
 
@@ -63,8 +99,8 @@ body {
 /* ── Cards ── */
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
 .card-h { padding: 20px 22px 0; }
-.eyebrow { font-family: "JetBrains Mono"; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
-.card-h h2 { font-family: "Space Grotesk"; font-size: 18px; font-weight: 600; letter-spacing: -.01em; margin-top: 6px; }
+.eyebrow { font-family: "Roboto Mono"; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.card-h h2 { font-family: "Gooper", "Inter"; font-size: 19px; font-weight: 700; letter-spacing: -.01em; margin-top: 6px; }
 .card-b { padding: 18px 22px 22px; }
 
 /* ── Tipos ── */
@@ -74,7 +110,7 @@ body {
 .tipo .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-bottom: 10px; }
 .tipo .tt { display: block; font-size: 14px; font-weight: 500; }
 .tipo .ts { display: block; font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
-.tipo[aria-pressed="true"] { border-color: var(--sel, var(--accent)); background: linear-gradient(180deg, rgba(91,141,239,.08), transparent); }
+.tipo[aria-pressed="true"] { border-color: var(--sel, var(--accent)); background: var(--accent-soft); }
 .tipo[aria-pressed="true"]::after { content: ""; position: absolute; inset: 0; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--sel, var(--accent)); }
 .tipo .check { position: absolute; top: 12px; right: 12px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; opacity: 0; transition: opacity .15s; }
 .tipo[aria-pressed="true"] .check { opacity: 1; }
@@ -90,27 +126,33 @@ body {
 @media (max-width: 560px) { .row, .row-wide { grid-template-columns: 1fr; } }
 input, select, textarea { width: 100%; background: var(--panel-2); border: 1px solid var(--line); color: var(--ink); border-radius: 11px; padding: 12px 13px; font-size: 14px; font-family: inherit; transition: border-color .15s, box-shadow .15s; }
 input::placeholder, textarea::placeholder { color: var(--ink-3); }
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,141,239,.18); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); }
 select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7587' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; padding-right: 36px; }
 input[type="number"] { -moz-appearance: textfield; }
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { appearance: none; }
-.mono { font-family: "JetBrains Mono"; }
-input[type="date"] { color-scheme: dark; }
-input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.7); cursor: pointer; }
+.mono { font-family: "Roboto Mono"; }
+input[type="date"] { color-scheme: var(--scheme); }
+input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; }
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.85); }
 .extra { animation: fadeIn .22s ease; }
 .extra-head { display: flex; align-items: center; gap: 12px; margin: 2px 0 16px; }
 .extra-line { flex: 1; height: 1px; background: var(--line); }
-.extra-tag { font-family: "JetBrains Mono"; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.extra-tag { font-family: "Roboto Mono"; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
 textarea { resize: vertical; min-height: 68px; }
 
 /* ── Buttons ── */
 .actions { display: flex; align-items: center; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
-.btn { cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 500; border-radius: 11px; padding: 11px 18px; border: 1px solid transparent; transition: transform .12s, filter .15s, background .15s; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.btn { cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 500; border-radius: 999px; padding: 11px 18px; border: 1px solid transparent; transition: transform .12s, filter .15s, background .15s; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
 .btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
 .btn:active { transform: scale(.98); }
-.btn-primary { background: var(--lime); color: #10210A; font-weight: 600; }
-.btn-primary:hover { filter: brightness(1.06); }
+.btn-primary { background: var(--primary); color: var(--on-primary); font-weight: 600; }
+.btn-primary:hover { background: var(--primary-strong); }
+.btn-icon { padding: 11px; }
+.btn-icon svg { width: 16px; height: 16px; }
+.ic-moon { display: none; }
+[data-theme="dark"] .ic-sun { display: none; }
+[data-theme="dark"] .ic-moon { display: inline; }
 .btn-ghost { background: transparent; border-color: var(--line); color: var(--ink-2); }
 .btn-ghost:hover { background: var(--panel-2); color: var(--ink); }
 .toast { margin-left: auto; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity .2s; display: flex; align-items: center; gap: 7px; }
@@ -123,10 +165,10 @@ textarea { resize: vertical; min-height: 68px; }
 .stats-tipos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
 @media (max-width: 1100px) { .stats-tipos { grid-template-columns: repeat(2, 1fr); } }
 .stat { background: var(--panel-2); border: 1px solid var(--line-soft); border-radius: 12px; padding: 13px 15px; }
-.stat .n { font-family: "Space Grotesk"; font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
+.stat .n { font-family: "Gooper", "Inter"; font-size: 26px; font-weight: 700; letter-spacing: -.02em; }
 .stat .l { font-size: 11.5px; color: var(--ink-3); margin-top: 1px; }
 .stat-sm { background: var(--panel-2); border: 1px solid var(--line-soft); border-left: 3px solid; border-radius: 10px; padding: 10px 12px; }
-.stat-sm .n { font-family: "Space Grotesk"; font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+.stat-sm .n { font-family: "Gooper", "Inter"; font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
 .stat-sm .l { font-size: 10px; color: var(--ink-3); margin-top: 2px; }
 
 /* ── Filter bar ── */
@@ -164,10 +206,10 @@ textarea { resize: vertical; min-height: 68px; }
 .rec { background: var(--panel-2); border: 1px solid var(--line-soft); border-left: 3px solid; border-radius: 11px; padding: 13px 15px; animation: fadeIn .22s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 .rec-top { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; flex-wrap: wrap; }
-.tag { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 7px; white-space: nowrap; }
-.planta-chip { font-family: "JetBrains Mono"; font-size: 10.5px; color: var(--ink-2); background: var(--panel); border: 1px solid var(--line); padding: 2px 8px; border-radius: 6px; }
-.turno-chip { font-size: 10.5px; color: var(--ink-3); padding: 2px 7px; border-radius: 5px; background: rgba(255,255,255,.04); border: 1px solid var(--line-soft); }
-.rec-time { font-family: "JetBrains Mono"; font-size: 10.5px; color: var(--ink-3); white-space: nowrap; margin-left: auto; }
+.tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.planta-chip { font-family: "Roboto Mono"; font-size: 10.5px; color: var(--ink-2); background: var(--panel-2); border: 1px solid var(--line); padding: 2px 9px; border-radius: 999px; }
+.turno-chip { font-size: 10.5px; color: var(--ink-3); padding: 2px 8px; border-radius: 999px; background: var(--chip-bg); border: 1px solid var(--line-soft); }
+.rec-time { font-family: "Roboto Mono"; font-size: 10.5px; color: var(--ink-3); white-space: nowrap; margin-left: auto; }
 .rec-del { background: none; border: 1px solid transparent; color: var(--ink-3); cursor: pointer; padding: 3px 8px; border-radius: 7px; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-family: inherit; font-weight: 500; transition: all .15s; flex-shrink: 0; }
 .rec-del:hover { color: var(--c-cancel); background: rgba(242,101,92,.1); }
 .rec-del.confirming { color: var(--c-cancel); background: rgba(242,101,92,.12); border-color: rgba(242,101,92,.3); }
@@ -176,7 +218,7 @@ textarea { resize: vertical; min-height: 68px; }
 @media (max-width: 480px) { .rec-grid { grid-template-columns: repeat(2, 1fr); } }
 .rec-grid .k { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .07em; }
 .rec-grid .v { font-size: 13px; font-weight: 500; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rec-grid .v.mono { font-family: "JetBrains Mono"; font-size: 12px; }
+.rec-grid .v.mono { font-family: "Roboto Mono"; font-size: 12px; }
 .rec-obs { margin-top: 9px; font-size: 12.5px; color: var(--ink-2); border-top: 1px dashed var(--line); padding-top: 8px; }
 
 /* ── Print ── */
@@ -198,7 +240,7 @@ textarea { resize: vertical; min-height: 68px; }
 .dz-sub { font-size: 11.5px; color: var(--ink-3); }
 .fileinfo { margin-top: 10px; display: flex; align-items: center; gap: 10px; padding: 10px 13px; background: var(--panel-2); border: 1px solid var(--line-soft); border-radius: 10px; font-size: 13px; }
 .fileinfo .fi-name { font-weight: 500; }
-.fileinfo .fi-meta { color: var(--ink-3); font-size: 12px; margin-left: auto; font-family: "JetBrains Mono"; }
+.fileinfo .fi-meta { color: var(--ink-3); font-size: 12px; margin-left: auto; font-family: "Roboto Mono"; }
 
 /* ── Audit table ── */
 .aud-table-wrap { max-height: 460px; overflow: auto; border: 1px solid var(--line-soft); border-radius: 11px; margin-top: 4px; }
@@ -208,13 +250,13 @@ textarea { resize: vertical; min-height: 68px; }
 .aud-table th { position: sticky; top: 0; background: var(--panel); color: var(--ink-3); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; z-index: 1; }
 .aud-table td { padding: 9px 12px; border-bottom: 1px solid var(--line-soft); }
 .aud-table tbody tr:hover { background: var(--panel-2); }
-.aud-table .id-cell { font-family: "JetBrains Mono"; font-size: 12.5px; }
-.aud-table .sis-cell { font-family: "JetBrains Mono"; color: var(--ink-2); }
-.aud-table input.cont { width: 92px; background: var(--bg); border: 1px solid var(--line); color: var(--ink); border-radius: 8px; padding: 7px 9px; font-size: 13px; font-family: "JetBrains Mono"; }
-.aud-table input.cont:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,141,239,.18); }
-.aud-table .div-cell { font-family: "JetBrains Mono"; font-weight: 600; }
-.aud-status { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 7px; white-space: nowrap; }
-.aud-status.pendente { color: var(--ink-3); background: rgba(255,255,255,.05); }
+.aud-table .id-cell { font-family: "Roboto Mono"; font-size: 12.5px; }
+.aud-table .sis-cell { font-family: "Roboto Mono"; color: var(--ink-2); }
+.aud-table input.cont { width: 92px; background: var(--bg); border: 1px solid var(--line); color: var(--ink); border-radius: 8px; padding: 7px 9px; font-size: 13px; font-family: "Roboto Mono"; }
+.aud-table input.cont:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); }
+.aud-table .div-cell { font-family: "Roboto Mono"; font-weight: 600; }
+.aud-status { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.aud-status.pendente { color: var(--ink-3); background: var(--chip-bg); }
 .aud-status.ok { color: var(--ok); background: rgba(79,209,161,.14); }
 .aud-status.divergente { color: var(--c-cancel); background: rgba(242,101,92,.14); }
 .div-pos { color: var(--ok); }
@@ -240,15 +282,29 @@ textarea { resize: vertical; min-height: 68px; }
 
   <header class="top">
     <div class="brand">
-      <div class="mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
-      </div>
+      <span class="brand-logo" role="img" aria-label="Petlove">
+        <svg viewBox="0 0 108.914 24" fill="currentColor" fill-rule="nonzero">
+          <g transform="translate(0,3.763)"><path d="M 0.825 17.817 C 0.825 16.246 1.083 15.885 1.829 15.243 C 2.447 14.728 2.524 14.213 2.524 13.337 L 2.524 7.184 C 2.524 5.87 2.447 5.459 1.546 5.433 C 0.594 5.381 0.001 5.02 0.001 4.094 C -0.025 2.909 0.592 1.983 1.52 1.209 C 2.241 0.617 3.219 0.206 4.172 0.206 C 5.459 0.206 6.258 0.9 6.283 1.93 C 6.283 2.548 6.412 2.652 6.669 2.652 C 7.03 2.652 7.183 2.214 7.493 1.802 C 8.111 0.824 9.218 0 10.866 0 C 14.368 0 16.556 2.858 16.556 7.312 C 16.556 11.766 14.651 14.856 10.506 14.856 C 8.292 14.83 8.24 13.8 7.648 13.827 C 7.056 13.878 7.056 14.341 7.081 14.934 C 7.107 15.32 7.235 15.578 7.853 15.938 C 8.729 16.427 9.141 16.941 9.141 18.177 C 9.141 19.412 8.574 20.211 6.695 20.237 C 4.198 20.237 0.824 19.928 0.824 17.817 L 0.825 17.817 Z M 10.995 7.492 C 10.66 5.767 10.043 4.634 8.653 4.892 C 7.391 5.124 7.184 6.385 7.391 7.878 C 7.648 9.989 8.24 10.633 9.656 10.453 C 10.969 10.324 11.33 9.268 10.995 7.491 L 10.995 7.492 Z"/></g>
+          <g transform="translate(17.688,3.968)"><path d="M 0 8.059 C 0 3.785 2.317 0 7.363 0 C 11.225 0 13.929 2.111 13.929 6.489 C 13.929 8.522 13.49 8.831 10.942 8.831 L 5.664 8.831 C 5.355 8.831 5.15 8.935 5.15 9.295 C 5.15 10.119 6.746 10.659 8.729 10.659 C 9.366 10.659 9.886 10.613 10.323 10.539 C 10.901 10.441 12.91 9.94 13.241 11.198 C 13.296 11.409 13.285 11.632 13.234 11.843 C 12.7 14.053 10.391 15.32 7.365 15.32 C 2.963 15.32 0.002 12.411 0.002 8.059 L 0 8.059 Z M 9.792 4.995 C 9.649 3.875 8.651 2.882 7.365 2.947 C 5.724 3.01 5.046 4.036 5.153 5.604 C 5.189 6.213 5.475 6.308 6.081 6.308 C 9.471 6.308 9.9 5.859 9.792 4.995 Z"/></g>
+          <g transform="translate(32.47,2.603)"><path d="M 1.7 11.561 C 1.7 10.119 1.983 8.935 1.983 7.364 C 1.983 6.592 1.854 6.669 0.953 6.643 C 0 6.592 0 5.819 0 4.66 C 0 2.729 0.361 2.909 2.909 1.57 C 4.583 0.67 5.51 0 6.694 0 C 7.235 0 7.698 0.258 7.698 1.004 C 7.698 2.034 7.955 2.493 9.114 2.493 C 10.607 2.493 11.174 2.493 11.174 3.754 C 11.174 4.475 11.097 4.886 11.046 5.891 C 10.968 7.358 10.221 7.358 8.702 7.358 C 6.926 7.358 7.286 6.822 7.235 8.496 C 7.235 9.037 7.184 9.577 7.184 10.067 C 7.184 10.865 7.647 11.277 8.368 11.277 C 9.038 11.277 9.784 11.097 10.351 11.097 C 10.84 11.097 11.123 11.354 11.097 12.435 C 11.072 14.727 9.578 16.35 6.875 16.35 C 3.888 16.35 1.7 14.548 1.7 11.561 Z"/></g>
+          <g transform="translate(43.928,0.033)"><path d="M 0.773 16.268 C 0.773 15.342 0.824 14.775 1.545 14.157 C 2.112 13.668 2.189 13.154 2.267 12.02 C 2.292 11.145 2.292 10.243 2.292 9.265 C 2.292 8.209 2.292 6.433 2.267 5.454 C 2.24 4.656 2.112 4.502 1.391 4.451 C 0.567 4.424 0 4.142 0 3.138 C 0 1.054 7.827 -2.08 7.827 1.954 C 7.827 2.648 7.75 3.782 7.621 5.789 C 7.466 7.772 7.235 10.732 7.338 12.561 C 7.389 13.307 7.492 13.617 7.982 14.054 C 8.522 14.517 8.805 15.007 8.805 16.114 C 8.805 18.019 8.161 18.74 4.763 18.74 C 1.75 18.74 0.772 18.483 0.772 16.268 L 0.773 16.268 Z"/></g>
+          <g transform="translate(53.403,3.788)"><path d="M 0.001 7.725 C 0.001 3.245 2.318 -0.052 7.416 0.001 C 12.334 0.052 14.6 3.219 14.6 7.725 C 14.6 12.231 12.256 15.294 7.261 15.294 C 2.265 15.294 0 12.282 0 7.725 L 0.001 7.725 Z M 9.218 7.261 C 8.523 5.047 7.854 4.172 6.515 4.533 C 5.279 4.841 4.944 6.154 5.46 8.292 C 5.974 10.275 6.85 10.97 8.137 10.661 C 9.527 10.352 9.785 9.168 9.218 7.262 L 9.218 7.261 Z"/></g>
+          <g transform="translate(68.543,4.122)"><path d="M 3.476 12.23 C 3.013 10.788 2.188 8.342 1.467 6.127 C 1.107 4.943 0.927 4.66 0.437 4.274 C 0.128 4.016 0 3.604 0 2.472 C 0 0.463 0.746 0 4.299 0 C 7.44 0 8.007 0.618 8.007 2.214 C 8.007 3.141 7.905 3.579 7.44 4.016 C 7.106 4.351 7.054 4.634 7.184 5.304 C 7.44 6.489 7.775 7.827 8.059 8.883 C 8.213 9.578 8.266 9.836 8.523 9.836 C 8.857 9.836 8.936 9.45 9.167 8.755 C 9.553 7.545 9.606 7.441 10.043 5.794 C 10.275 4.918 10.069 4.455 9.58 3.991 C 9.323 3.683 9.09 3.27 9.09 2.292 C 9.09 0.721 9.476 0.051 12.772 0.051 C 15.115 0.051 15.321 0.721 15.321 2.137 C 15.321 3.244 15.038 3.708 14.729 4.069 C 14.291 4.558 14.163 4.79 13.828 5.69 C 12.85 8.24 12.386 9.605 11.382 12.411 C 10.738 14.162 10.532 14.574 8.858 14.574 L 6.774 14.574 C 4.765 14.574 4.224 14.393 3.478 12.231 L 3.476 12.23 Z"/></g>
+          <g transform="translate(84.117,3.763)"><path d="M 0 8.059 C 0 3.785 2.317 0 7.363 0 C 11.225 0 13.929 2.111 13.929 6.489 C 13.929 8.522 13.49 8.831 10.942 8.831 L 5.664 8.831 C 5.355 8.831 5.15 8.935 5.15 9.295 C 5.15 10.119 6.746 10.659 8.729 10.659 C 9.366 10.659 9.886 10.613 10.323 10.539 C 10.901 10.441 12.91 9.94 13.241 11.198 C 13.296 11.409 13.285 11.632 13.234 11.843 C 12.7 14.053 10.391 15.32 7.365 15.32 C 2.963 15.32 0.002 12.411 0.002 8.059 L 0 8.059 Z M 9.792 4.995 C 9.649 3.875 8.651 2.882 7.365 2.947 C 5.724 3.01 5.046 4.036 5.153 5.604 C 5.189 6.213 5.475 6.308 6.081 6.308 C 9.471 6.308 9.9 5.859 9.792 4.995 L 9.792 4.995 Z"/></g>
+          <g transform="translate(98.659,0)"><path fill="#EA534A" d="M 2.612 0 C 3.838 0.018 4.876 0.847 5.717 1.925 C 5.89 2.148 6.273 2.241 6.45 2.022 C 8.089 0 10.255 0.467 10.253 2.59 C 10.378 6.9 3.945 13.189 2.377 8.14 C 1.688 5.92 0.074 4.416 0.003 2.761 C -0.062 1.269 1.119 -0.021 2.613 0 L 2.612 0 Z"/></g>
+        </svg>
+      </span>
+      <span class="brand-divider" aria-hidden="true"></span>
       <div>
         <h1>Controle de Estoque</h1>
-        <p>Petlove</p>
+        <p>Gestão de ocorrências e auditorias</p>
       </div>
     </div>
     <div class="top-right">
+      <button class="btn btn-ghost btn-icon" id="btn-theme" title="Alternar tema" aria-label="Alternar tema">
+        <svg class="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ic-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
       <button class="btn btn-ghost" id="btn-clear-all" title="Limpar todos os registros">
         <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
         Limpar tudo
@@ -637,6 +693,20 @@ textarea { resize: vertical; min-height: 68px; }
 (function () {
   'use strict';
 
+  /* ── Tema (claro/escuro) ── */
+  const THEME_KEY = 'tema-petlove';
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    const b = document.getElementById('btn-theme');
+    if (b) b.title = t === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro';
+  }
+  applyTheme(localStorage.getItem(THEME_KEY) || 'light');
+  document.getElementById('btn-theme').addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    localStorage.setItem(THEME_KEY, next);
+    applyTheme(next);
+  });
+
   const STORAGE_KEY = 'divs-petlove-v1';
   const META = {
     cancelamento:    { label: 'Cancelamento',        color: '#F2655C', bg: 'rgba(242,101,92,.14)' },
@@ -745,7 +815,7 @@ textarea { resize: vertical; min-height: 68px; }
       const msg = registros.length === 0
         ? 'Nenhuma divergência registrada ainda'
         : 'Nenhum resultado para os filtros aplicados';
-      feed.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><p>${msg}</p></div>`;
+      feed.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24" style="fill:var(--line);stroke:none" fill-rule="evenodd"><g transform="translate(2,2.177)"><path d="M 7.513 8.41 C 7.934 8.41 8.277 8.752 8.277 9.173 L 8.277 9.883 C 8.276 10.305 7.934 10.647 7.513 10.647 C 7.092 10.647 6.75 10.305 6.749 9.883 L 6.749 9.173 C 6.749 8.752 7.092 8.41 7.513 8.41 Z"/><path d="M 12.487 8.41 C 12.908 8.41 13.25 8.752 13.25 9.173 L 13.25 9.883 C 13.25 10.305 12.908 10.647 12.487 10.647 C 12.065 10.647 11.723 10.305 11.723 9.883 L 11.723 9.173 C 11.723 8.752 12.065 8.41 12.487 8.41 Z"/><path d="M 10 0 C 11.014 0 12.288 0.163 13.52 0.499 C 14.743 0.831 15.996 1.354 16.915 2.117 C 17.565 2.657 18.181 3.669 18.676 4.782 C 19.184 5.924 19.613 7.286 19.835 8.622 C 20.056 9.944 20.088 11.32 19.728 12.45 C 19.379 13.548 18.64 14.443 17.396 14.748 C 17.399 14.847 17.401 14.946 17.403 15.044 C 17.41 15.306 17.419 15.768 17.419 16 C 17.42 16.319 17.406 16.511 17.381 16.695 C 17.299 17.27 17.103 17.793 16.793 18.247 C 16.658 18.438 16.48 18.606 16.296 18.778 C 15.906 19.103 15.206 19.466 14.594 19.616 C 13.794 19.65 13.364 19.628 13.242 19.615 C 12.03 19.362 10.903 18.762 10 17.824 C 9.097 18.762 7.97 19.362 6.758 19.615 C 6.636 19.628 6.206 19.65 5.406 19.616 C 4.794 19.466 4.094 19.103 3.704 18.778 C 3.52 18.606 3.342 18.438 3.207 18.247 C 2.897 17.793 2.701 17.27 2.619 16.695 C 2.594 16.511 2.58 16.319 2.58 16.119 C 2.58 15.913 2.582 15.581 2.587 15.35 C 2.594 15.107 2.601 14.827 2.604 14.748 C 1.36 14.443 0.622 13.548 0.272 12.45 C -0.087 11.32 -0.056 9.944 0.164 8.622 C 0.387 7.286 0.816 5.924 1.324 4.782 C 1.818 3.669 2.435 2.657 3.085 2.117 C 4.004 1.354 5.257 0.831 6.48 0.499 C 7.712 0.163 8.986 0 10 0 Z M 10 1.528 C 9.129 1.528 7.99 1.67 6.88 1.972 C 5.762 2.276 4.743 2.724 4.06 3.291 C 3.691 3.598 3.191 4.339 2.719 5.402 C 2.26 6.435 1.87 7.673 1.67 8.872 C 1.468 10.087 1.472 11.187 1.726 11.987 C 1.914 12.577 2.223 12.974 2.7 13.176 C 2.829 11.658 3.08 9.913 3.537 7.525 C 3.617 7.111 4.016 6.84 4.43 6.919 C 4.844 6.998 5.115 7.399 5.036 7.812 C 4.481 10.708 4.242 12.61 4.153 14.301 C 4.12 14.919 4.107 15.513 4.107 16.119 C 4.107 16.94 4.42 17.432 4.828 17.724 C 5.263 18.035 5.894 18.177 6.586 18.099 C 7.561 17.988 8.448 17.483 8.908 16.701 C 9.092 16.329 9.181 16 9.181 16 C 9.218 15.831 9.237 15.655 9.237 15.471 L 9.236 15.387 L 9.236 15.025 C 8.864 14.731 8.385 14.251 8.136 13.677 C 8.021 13.411 8.053 13.118 8.196 12.89 C 8.328 12.678 8.526 12.563 8.696 12.51 C 8.974 12.424 9.44 12.326 10 12.326 C 10.56 12.326 11.024 12.424 11.303 12.51 L 11.435 12.561 C 11.568 12.626 11.704 12.73 11.804 12.89 C 11.947 13.118 11.979 13.411 11.863 13.677 C 11.614 14.251 11.136 14.731 10.763 15.025 L 10.763 15.387 L 10.763 15.472 C 10.764 16.944 11.996 17.938 13.414 18.099 C 14.106 18.177 14.737 18.035 15.173 17.724 C 15.581 17.432 15.894 16.94 15.894 16.119 C 15.894 15.513 15.88 14.919 15.848 14.301 C 15.758 12.61 15.518 10.708 14.964 7.812 C 14.885 7.399 15.156 6.998 15.57 6.919 C 15.983 6.84 16.384 7.111 16.463 7.525 C 16.92 9.913 17.171 11.658 17.3 13.176 C 17.777 12.974 18.085 12.578 18.273 11.987 C 18.528 11.187 18.532 10.088 18.33 8.873 C 18.13 7.673 17.741 6.435 17.281 5.402 C 16.868 4.472 16.433 3.788 16.084 3.426 L 15.94 3.291 C 15.257 2.724 14.238 2.276 13.119 1.972 C 12.01 1.67 10.871 1.528 10 1.528 Z"/></g></svg><p>${msg}</p></div>`;
       return;
     }
 
