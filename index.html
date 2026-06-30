@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 @font-face { font-family: "Gooper"; src: url("fonts/Gooper-SemiBold.otf") format("opentype"); font-weight: 600; font-style: normal; font-display: swap; }
 @font-face { font-family: "Gooper"; src: url("fonts/Gooper-Bold.otf") format("opentype"); font-weight: 700; font-style: normal; font-display: swap; }
@@ -229,6 +230,67 @@ textarea { resize: vertical; min-height: 68px; }
 .tab:hover { color: var(--ink-2); }
 .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
 
+/* ── Telas de entrada (gate) ── */
+.gate { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px;
+  background:
+    radial-gradient(900px 500px at 88% -10%, var(--glow-a), transparent 60%),
+    radial-gradient(700px 600px at -5% 110%, var(--glow-b), transparent 55%),
+    var(--bg);
+  animation: fadeIn .25s ease; }
+.gate[hidden] { display: none; }
+.gate-card { width: 100%; max-width: 440px; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); padding: 40px 36px; text-align: center; }
+.gate-logo { color: var(--accent); display: inline-flex; margin-bottom: 22px; }
+.gate-logo svg { height: 30px; width: auto; }
+.gate-card h2 { font-family: "Gooper", "Inter"; font-size: 23px; font-weight: 700; letter-spacing: -.01em; }
+.gate-card p.sub { font-size: 13.5px; color: var(--ink-3); margin-top: 7px; margin-bottom: 28px; }
+.device-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.device-opt { appearance: none; cursor: pointer; font-family: inherit; background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 26px 16px; color: var(--ink); display: flex; flex-direction: column; align-items: center; gap: 12px; transition: transform .15s, border-color .15s, background .15s; }
+.device-opt:hover { transform: translateY(-2px); border-color: var(--accent); background: var(--accent-soft); }
+.device-opt svg { width: 38px; height: 38px; stroke: var(--accent); fill: none; stroke-width: 1.6; }
+.device-opt .d-t { font-size: 15px; font-weight: 600; }
+.device-opt .d-s { font-size: 11.5px; color: var(--ink-3); }
+.gate-form { text-align: left; margin-top: 6px; }
+.gate-form .field { margin-bottom: 16px; }
+.gate-form .actions { margin-top: 6px; }
+.gate-back { background: none; border: none; color: var(--ink-3); font-family: inherit; font-size: 12.5px; cursor: pointer; margin-top: 18px; display: inline-flex; align-items: center; gap: 6px; }
+.gate-back:hover { color: var(--ink-2); }
+.gate-back svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+.gate-err { color: var(--c-cancel); font-size: 12.5px; margin-top: 10px; min-height: 16px; }
+.gate-note { font-size: 11px; color: var(--ink-3); margin-top: 22px; line-height: 1.4; }
+
+/* ── Modo celular: app em coluna estreita ── */
+body.mode-mobile .wrap { max-width: 460px; }
+body.mode-mobile .tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+body.mode-mobile .tab { white-space: nowrap; }
+body.mode-mobile .top-right { width: 100%; justify-content: flex-start; }
+body.mode-mobile .dash-grid { grid-template-columns: 1fr; }
+body.mode-mobile .dash-kpis { grid-template-columns: repeat(2, 1fr); }
+body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; }
+
+/* ── Dashboard ── */
+.dash-filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 20px; }
+.dash-filters .field { margin-bottom: 0; }
+.dash-filters select { width: auto; min-width: 170px; }
+.dash-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+@media (max-width: 760px) { .dash-kpis { grid-template-columns: repeat(2, 1fr); } }
+.kpi { background: var(--panel-2); border: 1px solid var(--line-soft); border-radius: 12px; padding: 16px 18px; }
+.kpi .n { font-family: "Gooper", "Inter"; font-size: 30px; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+.kpi .l { font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+@media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+.dash-chart-wrap { position: relative; height: 300px; }
+.dash-chart-wrap.tall { height: 340px; }
+.chart-empty { display: grid; place-items: center; height: 100%; color: var(--ink-3); font-size: 13px; text-align: center; padding: 20px; }
+
+/* ── Sub-tabs ── */
+.subtabs { display: inline-flex; gap: 4px; margin-bottom: 22px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+.subtab { appearance: none; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 500; color: var(--ink-3); background: none; border: none; padding: 8px 16px; border-radius: 999px; display: inline-flex; align-items: center; gap: 7px; transition: color .15s, background .15s; }
+.subtab svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.subtab:hover { color: var(--ink-2); }
+.subtab.active { color: var(--ink); background: var(--panel); box-shadow: 0 1px 2px rgba(60,35,18,.08); }
+[data-theme="dark"] .subtab.active { box-shadow: 0 1px 0 rgba(255,255,255,.04) inset; }
+.subpanel[hidden] { display: none; }
+
 /* ── Audit grid ── */
 .grid-audit { display: flex; flex-direction: column; gap: 22px; }
 
@@ -248,12 +310,14 @@ textarea { resize: vertical; min-height: 68px; }
 .aud-table-wrap::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
 .aud-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .aud-table th { position: sticky; top: 0; background: var(--panel); color: var(--ink-3); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; z-index: 1; }
-.aud-table td { padding: 9px 12px; border-bottom: 1px solid var(--line-soft); }
+.aud-table td { padding: 9px 12px; border-bottom: 1px solid var(--line-soft); white-space: nowrap; }
 .aud-table tbody tr:hover { background: var(--panel-2); }
-.aud-table .id-cell { font-family: "Roboto Mono"; font-size: 12.5px; }
+.aud-table .id-cell { font-family: "Roboto Mono"; font-size: 12.5px; color: var(--ink-3); }
 .aud-table .sis-cell { font-family: "Roboto Mono"; color: var(--ink-2); }
-.aud-table input.cont { width: 92px; background: var(--bg); border: 1px solid var(--line); color: var(--ink); border-radius: 8px; padding: 7px 9px; font-size: 13px; font-family: "Roboto Mono"; }
-.aud-table input.cont:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); }
+.aud-table input.cont, .aud-table select.cont { min-width: 92px; background: var(--bg); border: 1px solid var(--line); color: var(--ink); border-radius: 8px; padding: 7px 9px; font-size: 13px; font-family: "Roboto Mono"; }
+.aud-table input.cont[type="text"] { min-width: 130px; font-family: inherit; }
+.aud-table select.cont { font-family: inherit; cursor: pointer; }
+.aud-table input.cont:focus, .aud-table select.cont:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); }
 .aud-table .div-cell { font-family: "Roboto Mono"; font-weight: 600; }
 .aud-status { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
 .aud-status.pendente { color: var(--ink-3); background: var(--chip-bg); }
@@ -278,7 +342,64 @@ textarea { resize: vertical; min-height: 68px; }
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<!-- ── Tela 1: escolha de dispositivo ── -->
+<div class="gate" id="gate-device">
+  <div class="gate-card">
+    <span class="gate-logo" role="img" aria-label="Petlove">
+      <svg viewBox="0 0 108.914 24" fill="currentColor" fill-rule="nonzero"><g transform="translate(0,3.763)"><path d="M 0.825 17.817 C 0.825 16.246 1.083 15.885 1.829 15.243 C 2.447 14.728 2.524 14.213 2.524 13.337 L 2.524 7.184 C 2.524 5.87 2.447 5.459 1.546 5.433 C 0.594 5.381 0.001 5.02 0.001 4.094 C -0.025 2.909 0.592 1.983 1.52 1.209 C 2.241 0.617 3.219 0.206 4.172 0.206 C 5.459 0.206 6.258 0.9 6.283 1.93 C 6.283 2.548 6.412 2.652 6.669 2.652 C 7.03 2.652 7.183 2.214 7.493 1.802 C 8.111 0.824 9.218 0 10.866 0 C 14.368 0 16.556 2.858 16.556 7.312 C 16.556 11.766 14.651 14.856 10.506 14.856 C 8.292 14.83 8.24 13.8 7.648 13.827 C 7.056 13.878 7.056 14.341 7.081 14.934 C 7.107 15.32 7.235 15.578 7.853 15.938 C 8.729 16.427 9.141 16.941 9.141 18.177 C 9.141 19.412 8.574 20.211 6.695 20.237 C 4.198 20.237 0.824 19.928 0.824 17.817 L 0.825 17.817 Z M 10.995 7.492 C 10.66 5.767 10.043 4.634 8.653 4.892 C 7.391 5.124 7.184 6.385 7.391 7.878 C 7.648 9.989 8.24 10.633 9.656 10.453 C 10.969 10.324 11.33 9.268 10.995 7.491 L 10.995 7.492 Z"/></g><g transform="translate(17.688,3.968)"><path d="M 0 8.059 C 0 3.785 2.317 0 7.363 0 C 11.225 0 13.929 2.111 13.929 6.489 C 13.929 8.522 13.49 8.831 10.942 8.831 L 5.664 8.831 C 5.355 8.831 5.15 8.935 5.15 9.295 C 5.15 10.119 6.746 10.659 8.729 10.659 C 9.366 10.659 9.886 10.613 10.323 10.539 C 10.901 10.441 12.91 9.94 13.241 11.198 C 13.296 11.409 13.285 11.632 13.234 11.843 C 12.7 14.053 10.391 15.32 7.365 15.32 C 2.963 15.32 0.002 12.411 0.002 8.059 L 0 8.059 Z M 9.792 4.995 C 9.649 3.875 8.651 2.882 7.365 2.947 C 5.724 3.01 5.046 4.036 5.153 5.604 C 5.189 6.213 5.475 6.308 6.081 6.308 C 9.471 6.308 9.9 5.859 9.792 4.995 Z"/></g><g transform="translate(32.47,2.603)"><path d="M 1.7 11.561 C 1.7 10.119 1.983 8.935 1.983 7.364 C 1.983 6.592 1.854 6.669 0.953 6.643 C 0 6.592 0 5.819 0 4.66 C 0 2.729 0.361 2.909 2.909 1.57 C 4.583 0.67 5.51 0 6.694 0 C 7.235 0 7.698 0.258 7.698 1.004 C 7.698 2.034 7.955 2.493 9.114 2.493 C 10.607 2.493 11.174 2.493 11.174 3.754 C 11.174 4.475 11.097 4.886 11.046 5.891 C 10.968 7.358 10.221 7.358 8.702 7.358 C 6.926 7.358 7.286 6.822 7.235 8.496 C 7.235 9.037 7.184 9.577 7.184 10.067 C 7.184 10.865 7.647 11.277 8.368 11.277 C 9.038 11.277 9.784 11.097 10.351 11.097 C 10.84 11.097 11.123 11.354 11.097 12.435 C 11.072 14.727 9.578 16.35 6.875 16.35 C 3.888 16.35 1.7 14.548 1.7 11.561 Z"/></g><g transform="translate(43.928,0.033)"><path d="M 0.773 16.268 C 0.773 15.342 0.824 14.775 1.545 14.157 C 2.112 13.668 2.189 13.154 2.267 12.02 C 2.292 11.145 2.292 10.243 2.292 9.265 C 2.292 8.209 2.292 6.433 2.267 5.454 C 2.24 4.656 2.112 4.502 1.391 4.451 C 0.567 4.424 0 4.142 0 3.138 C 0 1.054 7.827 -2.08 7.827 1.954 C 7.827 2.648 7.75 3.782 7.621 5.789 C 7.466 7.772 7.235 10.732 7.338 12.561 C 7.389 13.307 7.492 13.617 7.982 14.054 C 8.522 14.517 8.805 15.007 8.805 16.114 C 8.805 18.019 8.161 18.74 4.763 18.74 C 1.75 18.74 0.772 18.483 0.772 16.268 L 0.773 16.268 Z"/></g><g transform="translate(53.403,3.788)"><path d="M 0.001 7.725 C 0.001 3.245 2.318 -0.052 7.416 0.001 C 12.334 0.052 14.6 3.219 14.6 7.725 C 14.6 12.231 12.256 15.294 7.261 15.294 C 2.265 15.294 0 12.282 0 7.725 L 0.001 7.725 Z M 9.218 7.261 C 8.523 5.047 7.854 4.172 6.515 4.533 C 5.279 4.841 4.944 6.154 5.46 8.292 C 5.974 10.275 6.85 10.97 8.137 10.661 C 9.527 10.352 9.785 9.168 9.218 7.262 L 9.218 7.261 Z"/></g><g transform="translate(68.543,4.122)"><path d="M 3.476 12.23 C 3.013 10.788 2.188 8.342 1.467 6.127 C 1.107 4.943 0.927 4.66 0.437 4.274 C 0.128 4.016 0 3.604 0 2.472 C 0 0.463 0.746 0 4.299 0 C 7.44 0 8.007 0.618 8.007 2.214 C 8.007 3.141 7.905 3.579 7.44 4.016 C 7.106 4.351 7.054 4.634 7.184 5.304 C 7.44 6.489 7.775 7.827 8.059 8.883 C 8.213 9.578 8.266 9.836 8.523 9.836 C 8.857 9.836 8.936 9.45 9.167 8.755 C 9.553 7.545 9.606 7.441 10.043 5.794 C 10.275 4.918 10.069 4.455 9.58 3.991 C 9.323 3.683 9.09 3.27 9.09 2.292 C 9.09 0.721 9.476 0.051 12.772 0.051 C 15.115 0.051 15.321 0.721 15.321 2.137 C 15.321 3.244 15.038 3.708 14.729 4.069 C 14.291 4.558 14.163 4.79 13.828 5.69 C 12.85 8.24 12.386 9.605 11.382 12.411 C 10.738 14.162 10.532 14.574 8.858 14.574 L 6.774 14.574 C 4.765 14.574 4.224 14.393 3.478 12.231 L 3.476 12.23 Z"/></g><g transform="translate(84.117,3.763)"><path d="M 0 8.059 C 0 3.785 2.317 0 7.363 0 C 11.225 0 13.929 2.111 13.929 6.489 C 13.929 8.522 13.49 8.831 10.942 8.831 L 5.664 8.831 C 5.355 8.831 5.15 8.935 5.15 9.295 C 5.15 10.119 6.746 10.659 8.729 10.659 C 9.366 10.659 9.886 10.613 10.323 10.539 C 10.901 10.441 12.91 9.94 13.241 11.198 C 13.296 11.409 13.285 11.632 13.234 11.843 C 12.7 14.053 10.391 15.32 7.365 15.32 C 2.963 15.32 0.002 12.411 0.002 8.059 L 0 8.059 Z M 9.792 4.995 C 9.649 3.875 8.651 2.882 7.365 2.947 C 5.724 3.01 5.046 4.036 5.153 5.604 C 5.189 6.213 5.475 6.308 6.081 6.308 C 9.471 6.308 9.9 5.859 9.792 4.995 L 9.792 4.995 Z"/></g><g transform="translate(98.659,0)"><path fill="#EA534A" d="M 2.612 0 C 3.838 0.018 4.876 0.847 5.717 1.925 C 5.89 2.148 6.273 2.241 6.45 2.022 C 8.089 0 10.255 0.467 10.253 2.59 C 10.378 6.9 3.945 13.189 2.377 8.14 C 1.688 5.92 0.074 4.416 0.003 2.761 C -0.062 1.269 1.119 -0.021 2.613 0 L 2.612 0 Z"/></g></svg>
+    </span>
+    <h2>Controle de Estoque</h2>
+    <p class="sub">Como você vai usar o sistema?</p>
+    <div class="device-grid">
+      <button class="device-opt" data-device="desktop">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span class="d-t">Computador</span>
+        <span class="d-s">Tela ampla</span>
+      </button>
+      <button class="device-opt" data-device="mobile">
+        <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+        <span class="d-t">Celular</span>
+        <span class="d-s">Tela compacta</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Tela 2: login ── -->
+<div class="gate" id="gate-login" hidden>
+  <div class="gate-card">
+    <span class="gate-logo" role="img" aria-label="Petlove">
+      <svg viewBox="0 0 108.914 24" fill="currentColor" fill-rule="nonzero"><g transform="translate(0,3.763)"><path d="M 0.825 17.817 C 0.825 16.246 1.083 15.885 1.829 15.243 C 2.447 14.728 2.524 14.213 2.524 13.337 L 2.524 7.184 C 2.524 5.87 2.447 5.459 1.546 5.433 C 0.594 5.381 0.001 5.02 0.001 4.094 C -0.025 2.909 0.592 1.983 1.52 1.209 C 2.241 0.617 3.219 0.206 4.172 0.206 C 5.459 0.206 6.258 0.9 6.283 1.93 C 6.283 2.548 6.412 2.652 6.669 2.652 C 7.03 2.652 7.183 2.214 7.493 1.802 C 8.111 0.824 9.218 0 10.866 0 C 14.368 0 16.556 2.858 16.556 7.312 C 16.556 11.766 14.651 14.856 10.506 14.856 C 8.292 14.83 8.24 13.8 7.648 13.827 C 7.056 13.878 7.056 14.341 7.081 14.934 C 7.107 15.32 7.235 15.578 7.853 15.938 C 8.729 16.427 9.141 16.941 9.141 18.177 C 9.141 19.412 8.574 20.211 6.695 20.237 C 4.198 20.237 0.824 19.928 0.824 17.817 L 0.825 17.817 Z M 10.995 7.492 C 10.66 5.767 10.043 4.634 8.653 4.892 C 7.391 5.124 7.184 6.385 7.391 7.878 C 7.648 9.989 8.24 10.633 9.656 10.453 C 10.969 10.324 11.33 9.268 10.995 7.491 L 10.995 7.492 Z"/></g><g transform="translate(17.688,3.968)"><path d="M 0 8.059 C 0 3.785 2.317 0 7.363 0 C 11.225 0 13.929 2.111 13.929 6.489 C 13.929 8.522 13.49 8.831 10.942 8.831 L 5.664 8.831 C 5.355 8.831 5.15 8.935 5.15 9.295 C 5.15 10.119 6.746 10.659 8.729 10.659 C 9.366 10.659 9.886 10.613 10.323 10.539 C 10.901 10.441 12.91 9.94 13.241 11.198 C 13.296 11.409 13.285 11.632 13.234 11.843 C 12.7 14.053 10.391 15.32 7.365 15.32 C 2.963 15.32 0.002 12.411 0.002 8.059 L 0 8.059 Z M 9.792 4.995 C 9.649 3.875 8.651 2.882 7.365 2.947 C 5.724 3.01 5.046 4.036 5.153 5.604 C 5.189 6.213 5.475 6.308 6.081 6.308 C 9.471 6.308 9.9 5.859 9.792 4.995 Z"/></g><g transform="translate(32.47,2.603)"><path d="M 1.7 11.561 C 1.7 10.119 1.983 8.935 1.983 7.364 C 1.983 6.592 1.854 6.669 0.953 6.643 C 0 6.592 0 5.819 0 4.66 C 0 2.729 0.361 2.909 2.909 1.57 C 4.583 0.67 5.51 0 6.694 0 C 7.235 0 7.698 0.258 7.698 1.004 C 7.698 2.034 7.955 2.493 9.114 2.493 C 10.607 2.493 11.174 2.493 11.174 3.754 C 11.174 4.475 11.097 4.886 11.046 5.891 C 10.968 7.358 10.221 7.358 8.702 7.358 C 6.926 7.358 7.286 6.822 7.235 8.496 C 7.235 9.037 7.184 9.577 7.184 10.067 C 7.184 10.865 7.647 11.277 8.368 11.277 C 9.038 11.277 9.784 11.097 10.351 11.097 C 10.84 11.097 11.123 11.354 11.097 12.435 C 11.072 14.727 9.578 16.35 6.875 16.35 C 3.888 16.35 1.7 14.548 1.7 11.561 Z"/></g><g transform="translate(43.928,0.033)"><path d="M 0.773 16.268 C 0.773 15.342 0.824 14.775 1.545 14.157 C 2.112 13.668 2.189 13.154 2.267 12.02 C 2.292 11.145 2.292 10.243 2.292 9.265 C 2.292 8.209 2.292 6.433 2.267 5.454 C 2.24 4.656 2.112 4.502 1.391 4.451 C 0.567 4.424 0 4.142 0 3.138 C 0 1.054 7.827 -2.08 7.827 1.954 C 7.827 2.648 7.75 3.782 7.621 5.789 C 7.466 7.772 7.235 10.732 7.338 12.561 C 7.389 13.307 7.492 13.617 7.982 14.054 C 8.522 14.517 8.805 15.007 8.805 16.114 C 8.805 18.019 8.161 18.74 4.763 18.74 C 1.75 18.74 0.772 18.483 0.772 16.268 L 0.773 16.268 Z"/></g><g transform="translate(53.403,3.788)"><path d="M 0.001 7.725 C 0.001 3.245 2.318 -0.052 7.416 0.001 C 12.334 0.052 14.6 3.219 14.6 7.725 C 14.6 12.231 12.256 15.294 7.261 15.294 C 2.265 15.294 0 12.282 0 7.725 L 0.001 7.725 Z M 9.218 7.261 C 8.523 5.047 7.854 4.172 6.515 4.533 C 5.279 4.841 4.944 6.154 5.46 8.292 C 5.974 10.275 6.85 10.97 8.137 10.661 C 9.527 10.352 9.785 9.168 9.218 7.262 L 9.218 7.261 Z"/></g><g transform="translate(68.543,4.122)"><path d="M 3.476 12.23 C 3.013 10.788 2.188 8.342 1.467 6.127 C 1.107 4.943 0.927 4.66 0.437 4.274 C 0.128 4.016 0 3.604 0 2.472 C 0 0.463 0.746 0 4.299 0 C 7.44 0 8.007 0.618 8.007 2.214 C 8.007 3.141 7.905 3.579 7.44 4.016 C 7.106 4.351 7.054 4.634 7.184 5.304 C 7.44 6.489 7.775 7.827 8.059 8.883 C 8.213 9.578 8.266 9.836 8.523 9.836 C 8.857 9.836 8.936 9.45 9.167 8.755 C 9.553 7.545 9.606 7.441 10.043 5.794 C 10.275 4.918 10.069 4.455 9.58 3.991 C 9.323 3.683 9.09 3.27 9.09 2.292 C 9.09 0.721 9.476 0.051 12.772 0.051 C 15.115 0.051 15.321 0.721 15.321 2.137 C 15.321 3.244 15.038 3.708 14.729 4.069 C 14.291 4.558 14.163 4.79 13.828 5.69 C 12.85 8.24 12.386 9.605 11.382 12.411 C 10.738 14.162 10.532 14.574 8.858 14.574 L 6.774 14.574 C 4.765 14.574 4.224 14.393 3.478 12.231 L 3.476 12.23 Z"/></g><g transform="translate(84.117,3.763)"><path d="M 0 8.059 C 0 3.785 2.317 0 7.363 0 C 11.225 0 13.929 2.111 13.929 6.489 C 13.929 8.522 13.49 8.831 10.942 8.831 L 5.664 8.831 C 5.355 8.831 5.15 8.935 5.15 9.295 C 5.15 10.119 6.746 10.659 8.729 10.659 C 9.366 10.659 9.886 10.613 10.323 10.539 C 10.901 10.441 12.91 9.94 13.241 11.198 C 13.296 11.409 13.285 11.632 13.234 11.843 C 12.7 14.053 10.391 15.32 7.365 15.32 C 2.963 15.32 0.002 12.411 0.002 8.059 L 0 8.059 Z M 9.792 4.995 C 9.649 3.875 8.651 2.882 7.365 2.947 C 5.724 3.01 5.046 4.036 5.153 5.604 C 5.189 6.213 5.475 6.308 6.081 6.308 C 9.471 6.308 9.9 5.859 9.792 4.995 L 9.792 4.995 Z"/></g><g transform="translate(98.659,0)"><path fill="#EA534A" d="M 2.612 0 C 3.838 0.018 4.876 0.847 5.717 1.925 C 5.89 2.148 6.273 2.241 6.45 2.022 C 8.089 0 10.255 0.467 10.253 2.59 C 10.378 6.9 3.945 13.189 2.377 8.14 C 1.688 5.92 0.074 4.416 0.003 2.761 C -0.062 1.269 1.119 -0.021 2.613 0 L 2.612 0 Z"/></g></svg>
+    </span>
+    <h2>Acessar o sistema</h2>
+    <p class="sub">Entre com seu usuário e senha</p>
+    <div class="gate-form">
+      <div class="field">
+        <label for="login-user">Usuário</label>
+        <input id="login-user" type="text" autocomplete="username" placeholder="Usuário" autocapitalize="none" spellcheck="false">
+      </div>
+      <div class="field">
+        <label for="login-pass">Senha</label>
+        <input id="login-pass" type="password" autocomplete="current-password" placeholder="Senha">
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="login-btn" style="width:100%;justify-content:center">
+          <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Entrar
+        </button>
+      </div>
+      <div class="gate-err" id="login-err"></div>
+    </div>
+    <button class="gate-back" id="login-back">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Trocar tipo de dispositivo
+    </button>
+    <p class="gate-note">Acesso restrito. As credenciais ficam neste dispositivo apenas para controle de acesso básico.</p>
+  </div>
+</div>
+
+<div class="wrap" id="app" hidden>
 
   <header class="top">
     <div class="brand">
@@ -317,29 +438,59 @@ textarea { resize: vertical; min-height: 68px; }
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Exportar CSV
       </button>
+      <button class="btn btn-ghost btn-icon" id="btn-logout" title="Sair" aria-label="Sair">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
       <div class="clock"><span class="pulse"></span><span id="clock">--:--:--</span></div>
     </div>
   </header>
 
   <nav class="tabs" id="tabs">
-    <button class="tab active" data-tab="ocorrencias">
-      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Ocorrências
+    <button class="tab" data-tab="dashboard">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Dashboard
     </button>
-    <button class="tab" data-tab="auditorias">
-      <svg viewBox="0 0 24 24"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      Auditorias
+    <button class="tab active" data-tab="estoque">
+      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      Gestão de Estoque
+    </button>
+    <button class="tab" data-tab="pedidos">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Gestão de Pedidos
+    </button>
+    <button class="tab" data-tab="insumos">
+      <svg viewBox="0 0 24 24"><path d="M3 9h18M9 21V9"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      Gestão de Insumos
+    </button>
+    <button class="tab" data-tab="paletes">
+      <svg viewBox="0 0 24 24"><rect x="3" y="14" width="18" height="6" rx="1"/><path d="M6 14V8h12v6"/><line x1="9" y1="8" x2="9" y2="14"/><line x1="15" y1="8" x2="15" y2="14"/></svg>
+      Gestão de Paletes
     </button>
   </nav>
 
-  <section id="tab-ocorrencias" class="tab-panel">
-  <div class="grid">
+  <section id="tab-gestao" class="tab-panel">
+
+  <!-- ── Sub-abas (somente Gestão de Estoque) ── -->
+  <div class="subtabs" id="subtabs" hidden>
+    <button class="subtab active" data-subtab="ocorrencias">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+      Registro de ocorrências
+    </button>
+    <button class="subtab" data-subtab="auditorias">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Auditorias
+    </button>
+  </div>
+
+  <!-- ── Painel: Registro de ocorrências ── -->
+  <div class="subpanel" id="subpanel-ocorrencias">
+  <div class="grid-audit">
 
     <!-- ── Formulário ── -->
     <section class="card">
       <div class="card-h">
-        <span class="eyebrow">Novo registro</span>
-        <h2>Registrar ocorrência</h2>
+        <span class="eyebrow" id="form-eyebrow">Novo registro</span>
+        <h2 id="form-title">Registrar ocorrência</h2>
       </div>
       <div class="card-b">
 
@@ -347,17 +498,6 @@ textarea { resize: vertical; min-height: 68px; }
           <label for="tipo">Tipo de ocorrência <span class="req">*</span></label>
           <select id="tipo">
             <option value="">Selecione a ocorrência</option>
-            <option value="cancelamento">Cancelamento</option>
-            <option value="picking">Divergência picking</option>
-            <option value="packing">Divergência packing</option>
-            <option value="naoconformidade">Não conformidade</option>
-            <option value="avaria">Avaria</option>
-            <option value="sobra">Sobra</option>
-            <option value="perdaev">Perda - EV</option>
-            <option value="extravio">Extravio</option>
-            <option value="descarte">Descarte</option>
-            <option value="inventario-estoque">Inventário de Estoque</option>
-            <option value="inventario-paletes">Inventário de Paletes</option>
           </select>
         </div>
 
@@ -448,89 +588,34 @@ textarea { resize: vertical; min-height: 68px; }
       </div>
     </section>
 
-    <!-- ── Registros ── -->
+
+  </div>
+
+  </div><!-- /subpanel-ocorrencias -->
+
+  <!-- ── Painel: Auditorias ── -->
+  <div class="subpanel" id="subpanel-auditorias" hidden>
+  <div class="grid-audit">
+
     <section class="card">
       <div class="card-h">
-        <span class="eyebrow">Dados salvos localmente</span>
-        <h2>Registros</h2>
+        <span class="eyebrow">Nova auditoria</span>
+        <h2>Iniciar auditoria</h2>
       </div>
       <div class="card-b">
 
-        <div class="stats-main">
-          <div class="stat">
-            <div class="n" id="stat-total">0</div>
-            <div class="l">Total registros</div>
-          </div>
-          <div class="stat">
-            <div class="n" id="stat-plantas">0</div>
-            <div class="l">Plantas envolvidas</div>
-          </div>
-        </div>
-        <div class="stats-tipos">
-          <div class="stat-sm" style="border-left-color:#F2655C">
-            <div class="n" id="cnt-cancelamento" style="color:#F2655C">0</div>
-            <div class="l">Cancelamento</div>
-          </div>
-          <div class="stat-sm" style="border-left-color:#E0A93B">
-            <div class="n" id="cnt-picking" style="color:#E0A93B">0</div>
-            <div class="l">Picking</div>
-          </div>
-          <div class="stat-sm" style="border-left-color:#5B8DEF">
-            <div class="n" id="cnt-packing" style="color:#5B8DEF">0</div>
-            <div class="l">Packing</div>
-          </div>
-          <div class="stat-sm" style="border-left-color:#C57BF0">
-            <div class="n" id="cnt-naoconformidade" style="color:#C57BF0">0</div>
-            <div class="l">NCF</div>
-          </div>
-          <div class="stat-sm" style="border-left-color:#F08C4B">
-            <div class="n" id="cnt-avaria" style="color:#F08C4B">0</div>
-            <div class="l">Avaria</div>
-          </div>
-          <div class="stat-sm" style="border-left-color:#4FD1A1">
-            <div class="n" id="cnt-sobra" style="color:#4FD1A1">0</div>
-            <div class="l">Sobra</div>
-          </div>
-          <div class="stat-sm" style="border-left-color:#7E8AF0">
-            <div class="n" id="cnt-perdaev" style="color:#7E8AF0">0</div>
-            <div class="l">Perda - EV</div>
-          </div>
-          <div class="stat-sm" style="border-left-color:#D6557E">
-            <div class="n" id="cnt-extravio" style="color:#D6557E">0</div>
-            <div class="l">Extravio</div>
-          </div>
-          <div class="stat-sm" style="border-left-color:#9AA0AE">
-            <div class="n" id="cnt-descarte" style="color:#9AA0AE">0</div>
-            <div class="l">Descarte</div>
-          </div>
-          <div class="stat-sm" style="border-left-color:#3DB8C4">
-            <div class="n" id="cnt-inventario-estoque" style="color:#3DB8C4">0</div>
-            <div class="l">Inv. Estoque</div>
-          </div>
-          <div class="stat-sm" style="border-left-color:#C9A227">
-            <div class="n" id="cnt-inventario-paletes" style="color:#C9A227">0</div>
-            <div class="l">Inv. Paletes</div>
-          </div>
+        <div class="field">
+          <label for="aud-tipo">Auditoria <span class="req">*</span></label>
+          <select id="aud-tipo">
+            <option value="">Selecione a auditoria</option>
+          </select>
         </div>
 
-        <div class="filter-bar">
-          <div class="filter-pills" id="filter-pills">
-            <button class="filter-pill active" data-tipo="">Todos</button>
-            <button class="filter-pill" data-tipo="cancelamento">Cancelamento</button>
-            <button class="filter-pill" data-tipo="picking">Picking</button>
-            <button class="filter-pill" data-tipo="packing">Packing</button>
-            <button class="filter-pill" data-tipo="naoconformidade">NCF</button>
-            <button class="filter-pill" data-tipo="avaria">Avaria</button>
-            <button class="filter-pill" data-tipo="sobra">Sobra</button>
-            <button class="filter-pill" data-tipo="perdaev">Perda - EV</button>
-            <button class="filter-pill" data-tipo="extravio">Extravio</button>
-            <button class="filter-pill" data-tipo="descarte">Descarte</button>
-            <button class="filter-pill" data-tipo="inventario-estoque">Inv. Estoque</button>
-            <button class="filter-pill" data-tipo="inventario-paletes">Inv. Paletes</button>
-          </div>
-          <div class="filter-controls">
-            <select id="f-planta">
-              <option value="">Todas as plantas</option>
+        <div class="row">
+          <div class="field">
+            <label for="aud-planta">Planta <span class="req">*</span></label>
+            <select id="aud-planta">
+              <option value="">Selecione</option>
               <option value="CD Cabo">CD Cabo</option>
               <option value="CD Hidrolândia">CD Hidrolândia</option>
               <option value="CD Itajaí">CD Itajaí</option>
@@ -540,151 +625,161 @@ textarea { resize: vertical; min-height: 68px; }
               <option value="Hub BH">Hub BH</option>
               <option value="Hub CWB">Hub CWB</option>
             </select>
-            <div class="search-wrap">
-              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <input type="text" id="f-busca" placeholder="Entrega, item ou colaborador…">
-            </div>
+          </div>
+          <div class="field">
+            <label for="aud-colab">Colaborador <span class="req">*</span></label>
+            <input id="aud-colab" type="text" placeholder="Quem fará a auditoria" list="colab-list" autocomplete="off">
           </div>
         </div>
 
-        <div class="feed" id="feed"></div>
+        <div class="field">
+          <label>Arquivo <span class="req">*</span></label>
+          <div class="dropzone" id="aud-dropzone" tabindex="0" role="button" aria-label="Selecionar arquivo">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span class="dz-main">Arraste o arquivo aqui ou clique para selecionar</span>
+            <span class="dz-sub">Formatos aceitos: .csv, .xlsx</span>
+          </div>
+          <input type="file" id="aud-file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
+          <div class="fileinfo" id="aud-fileinfo" hidden>
+            <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--ink-2);fill:none;stroke-width:1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="fi-name" id="aud-fi-name">—</span>
+            <span class="fi-meta" id="aud-fi-meta"></span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="aud-iniciar">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Iniciar Auditoria
+          </button>
+          <button class="btn btn-ghost" id="aud-limpar">Limpar</button>
+          <span class="toast" id="aud-toast"></span>
+        </div>
 
       </div>
     </section>
 
-  </div>
-  </section>
-
-  <section id="tab-auditorias" class="tab-panel" hidden>
-    <div class="grid-audit">
-
-      <!-- ── Setup da auditoria ── -->
-      <section class="card">
-        <div class="card-h">
-          <span class="eyebrow">Nova auditoria</span>
-          <h2>Iniciar auditoria</h2>
+    <!-- ── Tela de auditoria gerada ── -->
+    <section class="card" id="aud-tela" hidden>
+      <div class="card-h" style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap">
+        <div>
+          <span class="eyebrow" id="aud-tela-eyebrow">Auditoria em andamento</span>
+          <h2 id="aud-tela-title">—</h2>
+          <p style="font-size:12.5px;color:var(--ink-3);margin-top:4px" id="aud-tela-meta">—</p>
         </div>
-        <div class="card-b">
+        <div class="actions" style="margin-top:2px">
+          <button class="btn btn-primary" id="aud-finalizar">
+            <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+            Finalizar e exportar
+          </button>
+          <button class="btn btn-ghost" id="aud-cancelar">Cancelar</button>
+        </div>
+      </div>
+      <div class="card-b">
+        <div class="stats-tipos" id="aud-resumo" style="margin-bottom:16px"></div>
+        <div class="aud-table-wrap">
+          <table class="aud-table" id="aud-table">
+            <thead id="aud-thead"></thead>
+            <tbody id="aud-tbody"></tbody>
+          </table>
+        </div>
+        <span class="toast" id="aud-tela-toast" style="margin-top:12px"></span>
+      </div>
+    </section>
 
+  </div>
+  </div><!-- /subpanel-auditorias -->
+
+  </section><!-- /tab-gestao -->
+
+  <!-- ── Dashboard ── -->
+  <section id="tab-dashboard" class="tab-panel" hidden>
+
+    <div class="card">
+      <div class="card-h">
+        <span class="eyebrow">Visão geral</span>
+        <h2>Dashboard de ocorrências</h2>
+      </div>
+      <div class="card-b">
+
+        <div class="dash-filters">
           <div class="field">
-            <label for="aud-tipo">Qual auditoria você deseja iniciar? <span class="req">*</span></label>
-            <select id="aud-tipo">
-              <option value="">Selecione a auditoria</option>
-              <option value="Armazenagem">Armazenagem</option>
-              <option value="Movimentação">Movimentação</option>
-              <option value="Recebimento">Recebimento</option>
-              <option value="Mono">Mono</option>
-              <option value="Perecíveis">Perecíveis</option>
-              <option value="Ocupação">Ocupação</option>
+            <label for="d-gestao">Gestão</label>
+            <select id="d-gestao">
+              <option value="">Todas as gestões</option>
+              <option value="estoque">Gestão de Estoque</option>
+              <option value="pedidos">Gestão de Pedidos</option>
+              <option value="insumos">Gestão de Insumos</option>
+              <option value="paletes">Gestão de Paletes</option>
             </select>
           </div>
-
-          <div class="row">
-            <div class="field">
-              <label for="aud-planta">Planta <span class="req">*</span></label>
-              <select id="aud-planta">
-                <option value="">Selecione</option>
-                <option value="CD Cabo">CD Cabo</option>
-                <option value="CD Hidrolândia">CD Hidrolândia</option>
-                <option value="CD Itajaí">CD Itajaí</option>
-                <option value="Hub SP">Hub SP</option>
-                <option value="Hub RJ">Hub RJ</option>
-                <option value="Hub POA">Hub POA</option>
-                <option value="Hub BH">Hub BH</option>
-                <option value="Hub CWB">Hub CWB</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="aud-colab">Auditor responsável <span class="req">*</span></label>
-              <input id="aud-colab" type="text" placeholder="Nome do auditor" list="colab-list" autocomplete="off">
-            </div>
-          </div>
-
           <div class="field">
-            <label>Planilha base <span class="req">*</span></label>
-            <label class="dropzone" id="aud-dropzone" for="aud-file">
-              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span class="dz-main">Clique para anexar ou arraste a planilha</span>
-              <span class="dz-sub">Formatos aceitos: .xlsx, .xls, .csv</span>
-            </label>
-            <input id="aud-file" type="file" accept=".xlsx,.xls,.csv" hidden>
-            <div id="aud-fileinfo" class="fileinfo" hidden></div>
+            <label for="d-planta">Filial</label>
+            <select id="d-planta">
+              <option value="">Todas as filiais</option>
+              <option value="CD Cabo">CD Cabo</option>
+              <option value="CD Hidrolândia">CD Hidrolândia</option>
+              <option value="CD Itajaí">CD Itajaí</option>
+              <option value="Hub SP">Hub SP</option>
+              <option value="Hub RJ">Hub RJ</option>
+              <option value="Hub POA">Hub POA</option>
+              <option value="Hub BH">Hub BH</option>
+              <option value="Hub CWB">Hub CWB</option>
+            </select>
           </div>
+          <div class="field">
+            <label for="d-periodo">Período</label>
+            <select id="d-periodo">
+              <option value="">Todo o período</option>
+              <option value="7">Últimos 7 dias</option>
+              <option value="30">Últimos 30 dias</option>
+              <option value="90">Últimos 90 dias</option>
+            </select>
+          </div>
+        </div>
 
-          <div id="aud-mapwrap" hidden>
-            <div class="extra-head"><span class="extra-line"></span><span class="extra-tag">Mapeamento de colunas</span><span class="extra-line"></span></div>
-            <div class="row">
-              <div class="field">
-                <label for="aud-col-id">Coluna identificador <span class="req">*</span></label>
-                <select id="aud-col-id"></select>
-              </div>
-              <div class="field">
-                <label for="aud-col-sis">Coluna qtd sistema <span class="req">*</span></label>
-                <select id="aud-col-sis"></select>
-              </div>
+        <div class="dash-kpis">
+          <div class="kpi"><div class="n" id="k-total">0</div><div class="l">Total de ocorrências</div></div>
+          <div class="kpi"><div class="n" id="k-filiais">0</div><div class="l">Filiais envolvidas</div></div>
+          <div class="kpi"><div class="n" id="k-tipos">0</div><div class="l">Tipos distintos</div></div>
+          <div class="kpi"><div class="n" id="k-hoje">0</div><div class="l">Registros hoje</div></div>
+        </div>
+
+        <div class="dash-grid">
+
+          <div class="card" style="box-shadow:none;background:var(--panel-2)">
+            <div class="card-h"><span class="eyebrow">Comparativo</span><h2 style="font-size:16px">Ocorrências por filial</h2></div>
+            <div class="card-b">
+              <div class="dash-chart-wrap"><canvas id="chart-filial"></canvas><div class="chart-empty" id="empty-filial" hidden>Sem dados para os filtros aplicados</div></div>
             </div>
           </div>
 
-          <div class="actions">
-            <button class="btn btn-primary" id="aud-start" disabled>
-              <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              Iniciar contagem
-            </button>
-            <button class="btn btn-ghost" id="aud-reset">Cancelar</button>
-            <span class="toast" id="aud-toast"></span>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ── Tela de contagem ── -->
-      <section class="card" id="aud-countcard" hidden>
-        <div class="card-h">
-          <span class="eyebrow" id="aud-count-eyebrow">Auditoria em andamento</span>
-          <h2 id="aud-count-title">Contagem</h2>
-        </div>
-        <div class="card-b">
-          <div class="stats-main" style="grid-template-columns:repeat(4,1fr)">
-            <div class="stat"><div class="n" id="aud-st-total">0</div><div class="l">Itens</div></div>
-            <div class="stat"><div class="n" id="aud-st-cont">0</div><div class="l">Contados</div></div>
-            <div class="stat"><div class="n" id="aud-st-div" style="color:var(--c-cancel)">0</div><div class="l">Divergentes</div></div>
-            <div class="stat"><div class="n" id="aud-st-ok" style="color:var(--ok)">0</div><div class="l">Conformes</div></div>
-          </div>
-
-          <div class="filter-bar">
-            <div class="filter-pills">
-              <button class="filter-pill active" data-audfilter="">Todos</button>
-              <button class="filter-pill" data-audfilter="pendente">Pendentes</button>
-              <button class="filter-pill" data-audfilter="divergente">Divergentes</button>
-              <button class="filter-pill" data-audfilter="ok">Conformes</button>
-            </div>
-            <div class="search-wrap">
-              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <input type="text" id="aud-busca" placeholder="Buscar item…">
+          <div class="card" style="box-shadow:none;background:var(--panel-2)">
+            <div class="card-h"><span class="eyebrow">Distribuição</span><h2 style="font-size:16px">Por tipo de ocorrência</h2></div>
+            <div class="card-b">
+              <div class="dash-chart-wrap"><canvas id="chart-tipo"></canvas><div class="chart-empty" id="empty-tipo" hidden>Sem dados para os filtros aplicados</div></div>
             </div>
           </div>
 
-          <div class="aud-table-wrap">
-            <table class="aud-table">
-              <thead>
-                <tr><th>Identificador</th><th>Qtd sistema</th><th>Qtd contada</th><th>Diverg.</th><th>Status</th></tr>
-              </thead>
-              <tbody id="aud-tbody"></tbody>
-            </table>
+          <div class="card" style="box-shadow:none;background:var(--panel-2)">
+            <div class="card-h"><span class="eyebrow">Distribuição</span><h2 style="font-size:16px">Por gestão</h2></div>
+            <div class="card-b">
+              <div class="dash-chart-wrap"><canvas id="chart-gestao"></canvas><div class="chart-empty" id="empty-gestao" hidden>Sem dados para os filtros aplicados</div></div>
+            </div>
           </div>
 
-          <div class="actions" style="margin-top:16px">
-            <button class="btn btn-primary" id="aud-finish">
-              <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              Finalizar e exportar
-            </button>
-            <button class="btn btn-ghost" id="aud-cancel-count">Descartar</button>
-            <span class="toast" id="aud-toast2"></span>
+          <div class="card" style="box-shadow:none;background:var(--panel-2)">
+            <div class="card-h"><span class="eyebrow">Tendência</span><h2 style="font-size:16px">Evolução no tempo</h2></div>
+            <div class="card-b">
+              <div class="dash-chart-wrap"><canvas id="chart-tempo"></canvas><div class="chart-empty" id="empty-tempo" hidden>Sem dados para os filtros aplicados</div></div>
+            </div>
           </div>
+
         </div>
-      </section>
 
+      </div>
     </div>
+
   </section>
 
 </div>
@@ -705,23 +800,271 @@ textarea { resize: vertical; min-height: 68px; }
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     localStorage.setItem(THEME_KEY, next);
     applyTheme(next);
+    if (typeof renderDashboard === 'function' && !document.getElementById('tab-dashboard').hidden) renderDashboard();
   });
 
   const STORAGE_KEY = 'divs-petlove-v1';
+
+  /* ── Gate: dispositivo + login ── */
+  const AUTH_KEY = 'auth-petlove';
+  const DEVICE_KEY = 'device-petlove';
+  const CRED = { user: 'controledeestoque', pass: 'controledeestoque123' };
+  let deviceEscolhido = null;
+
+  function aplicarDispositivo(dev) {
+    document.body.classList.toggle('mode-mobile', dev === 'mobile');
+    document.body.classList.toggle('mode-desktop', dev === 'desktop');
+  }
+
+  function abrirApp() {
+    document.getElementById('gate-device').hidden = true;
+    document.getElementById('gate-login').hidden = true;
+    document.getElementById('app').hidden = false;
+  }
+
+  function mostrarLogin() {
+    document.getElementById('gate-device').hidden = true;
+    document.getElementById('gate-login').hidden = false;
+    document.getElementById('login-err').textContent = '';
+    setTimeout(() => document.getElementById('login-user').focus(), 50);
+  }
+
+  function mostrarDispositivo() {
+    document.getElementById('gate-login').hidden = true;
+    document.getElementById('gate-device').hidden = false;
+  }
+
+  // Escolha de dispositivo
+  document.querySelectorAll('.device-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      deviceEscolhido = opt.dataset.device;
+      aplicarDispositivo(deviceEscolhido);
+      try { localStorage.setItem(DEVICE_KEY, deviceEscolhido); } catch (_) {}
+      mostrarLogin();
+    });
+  });
+
+  document.getElementById('login-back').addEventListener('click', mostrarDispositivo);
+
+  function tentarLogin() {
+    const u = document.getElementById('login-user').value.trim();
+    const p = document.getElementById('login-pass').value;
+    if (u === CRED.user && p === CRED.pass) {
+      try { localStorage.setItem(AUTH_KEY, '1'); } catch (_) {}
+      document.getElementById('login-pass').value = '';
+      abrirApp();
+    } else {
+      const err = document.getElementById('login-err');
+      err.textContent = 'Usuário ou senha incorretos.';
+      document.getElementById('login-pass').value = '';
+      document.getElementById('login-pass').focus();
+    }
+  }
+  document.getElementById('login-btn').addEventListener('click', tentarLogin);
+  ['login-user', 'login-pass'].forEach(id =>
+    document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') tentarLogin(); }));
+
+  function logout() {
+    try { localStorage.removeItem(AUTH_KEY); } catch (_) {}
+    document.getElementById('app').hidden = true;
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pass').value = '';
+    // Volta para a tela de dispositivo (mantém a preferência anterior pré-selecionada)
+    mostrarDispositivo();
+  }
+  document.getElementById('btn-logout').addEventListener('click', logout);
+
+  // Estado inicial do gate (sessão persistente)
+  (function initGate() {
+    const dev = localStorage.getItem(DEVICE_KEY);
+    if (dev) aplicarDispositivo(dev);
+    const logado = localStorage.getItem(AUTH_KEY) === '1';
+    if (logado && dev) { deviceEscolhido = dev; abrirApp(); }
+    else if (dev) { deviceEscolhido = dev; mostrarLogin(); }
+    // senão, permanece na tela de dispositivo (padrão do HTML)
+  })();
+
   const META = {
-    cancelamento:    { label: 'Cancelamento',        color: '#F2655C', bg: 'rgba(242,101,92,.14)' },
-    picking:         { label: 'Divergência picking', color: '#E0A93B', bg: 'rgba(224,169,59,.14)' },
-    packing:         { label: 'Divergência packing', color: '#5B8DEF', bg: 'rgba(91,141,239,.14)' },
-    naoconformidade: { label: 'Não conformidade',    color: '#C57BF0', bg: 'rgba(197,123,240,.14)' },
-    avaria:          { label: 'Avaria',              color: '#F08C4B', bg: 'rgba(240,140,75,.14)' },
-    sobra:           { label: 'Sobra',               color: '#4FD1A1', bg: 'rgba(79,209,161,.14)' },
-    perdaev:         { label: 'Perda - EV',          color: '#7E8AF0', bg: 'rgba(126,138,240,.14)' },
-    extravio:        { label: 'Extravio',            color: '#D6557E', bg: 'rgba(214,85,126,.14)' },
-    descarte:            { label: 'Descarte',               color: '#9AA0AE', bg: 'rgba(154,160,174,.14)' },
-    'inventario-estoque':{ label: 'Inventário de Estoque',  color: '#3DB8C4', bg: 'rgba(61,184,196,.14)' },
-    'inventario-paletes':{ label: 'Inventário de Paletes',  color: '#C9A227', bg: 'rgba(201,162,39,.14)' }
+    // ── Gestão de Estoque ──
+    'est-inventario':       { label: 'Inventário',                  color: '#3DB8C4', bg: 'rgba(61,184,196,.14)' },
+    'est-aud-recebimento':  { label: 'Auditoria recebimento',       color: '#5B8DEF', bg: 'rgba(91,141,239,.14)' },
+    'est-aud-armazenagem':  { label: 'Auditoria de armazenagem',    color: '#6FA8FF', bg: 'rgba(111,168,255,.14)' },
+    'est-aud-movimentacao': { label: 'Auditoria de movimentação',   color: '#7E8AF0', bg: 'rgba(126,138,240,.14)' },
+    'est-aud-mono':         { label: 'Auditoria de mono',           color: '#9B7BF0', bg: 'rgba(155,123,240,.14)' },
+    'est-aud-ocupacao':     { label: 'Auditoria de ocupação',       color: '#C57BF0', bg: 'rgba(197,123,240,.14)' },
+    'est-aud-pereciveis':   { label: 'Auditoria de perecíveis',     color: '#4FD1A1', bg: 'rgba(79,209,161,.14)' },
+    'est-analise-ev':       { label: 'Análise e busca de EV',       color: '#3FC8B0', bg: 'rgba(63,200,176,.14)' },
+    'est-temperatura':      { label: 'Monitoramento de temperatura',color: '#61C4D8', bg: 'rgba(97,196,216,.14)' },
+    'est-ronda-estoque':    { label: 'Ronda de estoque',            color: '#E0A93B', bg: 'rgba(224,169,59,.14)' },
+    'est-ronda-packing':    { label: 'Ronda de packing',            color: '#F0B84B', bg: 'rgba(240,184,75,.14)' },
+    'est-avaria-descarte':  { label: 'Avaria & Descarte',           color: '#F08C4B', bg: 'rgba(240,140,75,.14)' },
+    'est-doacao':           { label: 'Doação',                      color: '#88C940', bg: 'rgba(136,201,64,.14)' },
+    'est-descarte':         { label: 'Descarte',                    color: '#9AA0AE', bg: 'rgba(154,160,174,.14)' },
+    'est-sobras':           { label: 'Sobras',                      color: '#4FD1A1', bg: 'rgba(79,209,161,.14)' },
+
+    // ── Gestão de Pedidos ──
+    'ped-naoconformidade':  { label: 'Não conformidade',                color: '#C57BF0', bg: 'rgba(197,123,240,.14)' },
+    'ped-div-pick-pack':    { label: 'Divergência de picking x packing',color: '#E0A93B', bg: 'rgba(224,169,59,.14)' },
+    'ped-div-pack-exp':     { label: 'Divergência de packing x expedição',color: '#5B8DEF', bg: 'rgba(91,141,239,.14)' },
+    'ped-cancelamento':     { label: 'Cancelamento',                    color: '#F2655C', bg: 'rgba(242,101,92,.14)' },
+    'ped-extravio':         { label: 'Extravio',                        color: '#D6557E', bg: 'rgba(214,85,126,.14)' },
+    'ped-bloqueio':         { label: 'Lista de bloqueio',               color: '#9AA0AE', bg: 'rgba(154,160,174,.14)' },
+
+    // ── Gestão de Insumos ──
+    'ins-controle':         { label: 'Controle de insumos',         color: '#5B8DEF', bg: 'rgba(91,141,239,.14)' },
+    'ins-atendimento':      { label: 'Atendimento',                 color: '#4FD1A1', bg: 'rgba(79,209,161,.14)' },
+    'ins-inventario':       { label: 'Inventário',                  color: '#3DB8C4', bg: 'rgba(61,184,196,.14)' },
+
+    // ── Gestão de Paletes ──
+    'pal-inventario':       { label: 'Inventário',                  color: '#C9A227', bg: 'rgba(201,162,39,.14)' },
+    'pal-ajustes':          { label: 'Ajustes',                     color: '#E0A93B', bg: 'rgba(224,169,59,.14)' },
+    'pal-nfs':              { label: 'Nfs',                          color: '#7E8AF0', bg: 'rgba(126,138,240,.14)' }
   };
-  const EXTRA_TIPOS = ['picking', 'naoconformidade'];
+  const EXTRA_TIPOS = [];
+
+  /* ── Tipos de Auditoria/Ronda (vão para a sub-aba Auditorias) ── */
+  const TIPOS_AUDITORIA = [
+    'est-aud-recebimento', 'est-aud-armazenagem', 'est-aud-movimentacao',
+    'est-aud-mono', 'est-aud-ocupacao', 'est-aud-pereciveis',
+    'est-analise-ev', 'est-temperatura',
+    'est-ronda-estoque', 'est-ronda-packing'
+  ];
+
+  /* ── Opções de dropdown reutilizáveis ──
+     Ajuste as listas conforme o padrão real da operação. */
+  const OPT = {
+    simNao:    ['Sim', 'Não'],
+    situacao:  ['OK', 'Divergente'],
+    statusCor: ['Pendente', 'Em andamento', 'Corrigido'],
+    statusGen: ['Pendente', 'OK', 'Divergente']
+  };
+
+  /* ── Schema de cada auditoria ──
+     Cada coluna: { c: nome exibido, e: editável?, t: tipo de campo, o: opções (se select) }
+     t: 'text' | 'num' | 'select'. Colunas com e:false vêm da planilha (só leitura). */
+  const AUD_SCHEMA = {
+    'est-aud-recebimento': [
+      { c: 'Data' }, { c: 'Item' }, { c: 'Descrição' }, { c: 'Ean' }, { c: 'Qtd Recebida', t: 'num' },
+      { c: 'Auditado?', e: true, t: 'select', o: OPT.simNao },
+      { c: 'Qtd Audit.', e: true, t: 'num' },
+      { c: 'Situação', e: true, t: 'select', o: OPT.situacao },
+      { c: 'Status da correção', e: true, t: 'select', o: OPT.statusCor },
+      { c: 'Usuário Colaborador Erro', e: true, t: 'text' },
+      { c: 'Operação', e: true, t: 'text' }, { c: 'Login', e: true, t: 'text' }, { c: 'Mês' }
+    ],
+    'est-aud-armazenagem': [
+      { c: 'Data' }, { c: 'Item' }, { c: 'Descrição' }, { c: 'Ean' }, { c: 'Qtd Arm.', t: 'num' },
+      { c: 'Endereço' }, { c: 'Responsável (login de rede)' },
+      { c: 'Auditado?', e: true, t: 'select', o: OPT.simNao },
+      { c: 'Qtd Audit.', e: true, t: 'num' },
+      { c: 'Situação', e: true, t: 'select', o: OPT.situacao },
+      { c: 'Status da correção', e: true, t: 'select', o: OPT.statusCor },
+      { c: 'Classe', e: true, t: 'text' }, { c: 'Login CE', e: true, t: 'text' }, { c: 'Mês' }
+    ],
+    'est-aud-movimentacao': [
+      { c: 'Data' }, { c: 'Item' }, { c: 'Descrição' }, { c: 'Ean' }, { c: 'Local' }, { c: 'Classe Local' },
+      { c: 'Qtd Mov.', t: 'num' }, { c: 'Local Destino' }, { c: 'Classe Destino' }, { c: 'Data Movto' },
+      { c: 'Responsável (login de rede)' },
+      { c: 'Auditado?', e: true, t: 'select', o: OPT.simNao },
+      { c: 'Qt. auditada', e: true, t: 'num' },
+      { c: 'Situação', e: true, t: 'select', o: OPT.situacao },
+      { c: 'Status da correção', e: true, t: 'select', o: OPT.statusCor },
+      { c: 'Classe', e: true, t: 'text' }, { c: 'Login', e: true, t: 'text' }, { c: 'Mês' }
+    ],
+    'est-aud-mono': [
+      { c: 'Data' }, { c: 'Item' }, { c: 'Descrição' }, { c: 'Ean' }, { c: 'Endereço' }, { c: 'Classe Local' },
+      { c: 'Qtd', t: 'num' },
+      { c: 'Auditado?', e: true, t: 'select', o: OPT.simNao },
+      { c: 'Divergentes', e: true, t: 'num' },
+      { c: 'Situação', e: true, t: 'select', o: OPT.situacao },
+      { c: 'Status de correção', e: true, t: 'select', o: OPT.statusCor },
+      { c: 'Classe', e: true, t: 'text' }, { c: 'Login', e: true, t: 'text' }, { c: 'Mês' }
+    ],
+    'est-aud-ocupacao': [
+      { c: 'Data' }, { c: 'Descrição' }, { c: 'Classe Local' },
+      { c: 'Auditado?', e: true, t: 'select', o: OPT.simNao },
+      { c: 'Vazio?', e: true, t: 'select', o: OPT.simNao },
+      { c: 'Situação', e: true, t: 'select', o: OPT.situacao },
+      { c: 'Status da correção', e: true, t: 'select', o: OPT.statusCor },
+      { c: 'Classe', e: true, t: 'text' }, { c: 'Login CE', e: true, t: 'text' }, { c: 'Mês' }
+    ],
+    'est-aud-pereciveis': [
+      { c: 'Data' }, { c: 'Item' }, { c: 'Ean' }, { c: 'Data validade' }, { c: 'Dias' }, { c: 'Para' }, { c: 'Status' },
+      { c: 'Descrição' }, { c: 'Local' }, { c: 'Qtd', t: 'num' },
+      { c: 'Retirado', e: true, t: 'select', o: OPT.simNao },
+      { c: 'Qtd Retirada', e: true, t: 'num' },
+      { c: 'Situação', e: true, t: 'select', o: OPT.situacao },
+      { c: 'Status da correção', e: true, t: 'select', o: OPT.statusCor },
+      { c: 'Classe', e: true, t: 'text' }, { c: 'Login', e: true, t: 'text' }, { c: 'Mês' }
+    ],
+    'est-analise-ev': [
+      { c: 'Data' }, { c: 'Item' }, { c: 'Descrição' }, { c: 'Ean' }, { c: 'Local' }, { c: 'Qtd', t: 'num' },
+      { c: 'Preço' }, { c: 'Valor' },
+      { c: 'Auditado', e: true, t: 'select', o: OPT.simNao },
+      { c: 'Qtd Retirada', e: true, t: 'num' },
+      { c: 'Valor retirado', e: true, t: 'num' },
+      { c: 'Localizado', e: true, t: 'select', o: OPT.simNao },
+      { c: 'Status da correção', e: true, t: 'select', o: OPT.statusCor },
+      { c: 'Login', e: true, t: 'text' }, { c: 'Mês' }
+    ],
+    'est-temperatura': [
+      { c: 'Data' }, { c: 'Mês' }, { c: 'RUA' },
+      { c: 'Horário aferição', e: true, t: 'text' },
+      { c: 'Temperatura (°C)', e: true, t: 'num' },
+      { c: 'Umidade (%)', e: true, t: 'num' },
+      { c: 'Responsável', e: true, t: 'text' },
+      { c: 'Status', e: true, t: 'select', o: OPT.statusGen },
+      { c: 'Classe', e: true, t: 'text' }, { c: 'Login CE', e: true, t: 'text' }
+    ],
+    'est-ronda-estoque': [
+      { c: 'Mês' }, { c: 'Data' }, { c: 'Item' }, { c: 'Descrição' }, { c: 'Ean' }, { c: 'Qtd', t: 'num' },
+      { c: 'Local' }, { c: 'Valor Unitário' }, { c: 'Valor Total' },
+      { c: 'Situação', e: true, t: 'select', o: OPT.situacao },
+      { c: 'Data tratativa', e: true, t: 'text' },
+      { c: 'Status', e: true, t: 'select', o: OPT.statusCor },
+      { c: 'Classe', e: true, t: 'text' }, { c: 'Login CE', e: true, t: 'text' }
+    ],
+    'est-ronda-packing': [
+      { c: 'Mês' }, { c: 'Data' }, { c: 'Entrega' }, { c: 'Nota fiscal' },
+      { c: 'Status', e: true, t: 'select', o: OPT.statusGen },
+      { c: 'Divergência', e: true, t: 'text' },
+      { c: 'Oportunidade', e: true, t: 'text' },
+      { c: 'Turno', e: true, t: 'text' },
+      { c: 'Colaborador', e: true, t: 'text' }, { c: 'Login CE', e: true, t: 'text' }
+    ]
+  };
+
+  /* ── Abas de gestão: quais tipos cada uma contempla (na ordem desejada) ── */
+  const ABAS = {
+    estoque: {
+      eyebrow: 'Gestão de Estoque',
+      title:   'Registrar ocorrência de estoque',
+      tipos: [
+        'est-inventario', 'est-avaria-descarte',
+        'est-doacao', 'est-descarte', 'est-sobras'
+      ]
+    },
+    pedidos: {
+      eyebrow: 'Gestão de Pedidos',
+      title:   'Registrar ocorrência de pedido',
+      tipos: [
+        'ped-naoconformidade', 'ped-div-pick-pack', 'ped-div-pack-exp',
+        'ped-cancelamento', 'ped-extravio', 'ped-bloqueio'
+      ]
+    },
+    insumos: {
+      eyebrow: 'Gestão de Insumos',
+      title:   'Registrar ocorrência de insumos',
+      tipos: ['ins-controle', 'ins-atendimento', 'ins-inventario']
+    },
+    paletes: {
+      eyebrow: 'Gestão de Paletes',
+      title:   'Registrar ocorrência de paletes',
+      tipos: ['pal-inventario', 'pal-ajustes', 'pal-nfs']
+    }
+  };
+  let abaAtual = 'estoque';
+  const tiposDaAba = () => (ABAS[abaAtual] ? ABAS[abaAtual].tipos : []);
 
   let registros   = [];
   let tipoSel     = null;
@@ -758,16 +1101,14 @@ textarea { resize: vertical; min-height: 68px; }
   }
 
   /* ── Tipo selection ── */
-  const SEM_ENTREGA = ['avaria', 'perdaev', 'descarte', 'inventario-estoque', 'inventario-paletes'];
+  // Nº Entrega só se aplica aos tipos de Gestão de Pedidos
+  const COM_ENTREGA = ABAS.pedidos.tipos;
   function toggleExtras() {
     const show = tipoSel && EXTRA_TIPOS.includes(tipoSel);
-    document.querySelector('.extra').hidden = !show;
-    if (show) {
-      document.getElementById('extra-tag').textContent =
-        tipoSel === 'picking' ? 'Campos de picking' : 'Campos de não conformidade';
-    }
-    // Nº Entrega não se aplica a Avaria e Perda - EV
-    const semEntrega = tipoSel && SEM_ENTREGA.includes(tipoSel);
+    const extra = document.querySelector('.extra');
+    if (extra) extra.hidden = !show;
+
+    const semEntrega = !tipoSel || !COM_ENTREGA.includes(tipoSel);
     document.getElementById('field-entrega').hidden = semEntrega;
     document.getElementById('row-entrega-colab').classList.toggle('no-entrega', !!semEntrega);
     if (semEntrega) document.getElementById('entrega').value = '';
@@ -787,89 +1128,25 @@ textarea { resize: vertical; min-height: 68px; }
     if (ok) toastT = setTimeout(() => t.classList.remove('show'), 2800);
   }
 
-  /* ── Render ── */
-  function render() {
-    // Stats globais
-    document.getElementById('stat-total').textContent   = registros.length;
-    document.getElementById('stat-plantas').textContent = new Set(registros.map(r => r.planta)).size;
-    ['cancelamento', 'picking', 'packing', 'naoconformidade', 'avaria', 'sobra', 'perdaev', 'extravio', 'descarte', 'inventario-estoque', 'inventario-paletes'].forEach(k => {
-      const el = document.getElementById('cnt-' + k);
-      if (el) el.textContent = registros.filter(r => r.tipo === k).length;
-    });
+  /* ── Aplica a aba de gestão ativa (select de tipo, pills, stats) ── */
+  function aplicarAba() {
+    const cfg = ABAS[abaAtual];
+    if (!cfg) return;
+    const tipos = cfg.tipos;
 
-    // Feed com filtros
-    let vis = registros;
-    if (filtroTipo) vis = vis.filter(r => r.tipo === filtroTipo);
-    if (filtroPlt)  vis = vis.filter(r => r.planta === filtroPlt);
-    if (busca) {
-      const q = busca.toLowerCase();
-      vis = vis.filter(r =>
-        (r.entrega || '').toLowerCase().includes(q) ||
-        (r.item || '').toLowerCase().includes(q) ||
-        (r.colab || '').toLowerCase().includes(q)
-      );
-    }
+    document.getElementById('form-eyebrow').textContent = cfg.eyebrow;
+    document.getElementById('form-title').textContent   = cfg.title;
 
-    const feed = document.getElementById('feed');
-    if (!vis.length) {
-      const msg = registros.length === 0
-        ? 'Nenhuma divergência registrada ainda'
-        : 'Nenhum resultado para os filtros aplicados';
-      feed.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24" style="fill:var(--line);stroke:none" fill-rule="evenodd"><g transform="translate(2,2.177)"><path d="M 7.513 8.41 C 7.934 8.41 8.277 8.752 8.277 9.173 L 8.277 9.883 C 8.276 10.305 7.934 10.647 7.513 10.647 C 7.092 10.647 6.75 10.305 6.749 9.883 L 6.749 9.173 C 6.749 8.752 7.092 8.41 7.513 8.41 Z"/><path d="M 12.487 8.41 C 12.908 8.41 13.25 8.752 13.25 9.173 L 13.25 9.883 C 13.25 10.305 12.908 10.647 12.487 10.647 C 12.065 10.647 11.723 10.305 11.723 9.883 L 11.723 9.173 C 11.723 8.752 12.065 8.41 12.487 8.41 Z"/><path d="M 10 0 C 11.014 0 12.288 0.163 13.52 0.499 C 14.743 0.831 15.996 1.354 16.915 2.117 C 17.565 2.657 18.181 3.669 18.676 4.782 C 19.184 5.924 19.613 7.286 19.835 8.622 C 20.056 9.944 20.088 11.32 19.728 12.45 C 19.379 13.548 18.64 14.443 17.396 14.748 C 17.399 14.847 17.401 14.946 17.403 15.044 C 17.41 15.306 17.419 15.768 17.419 16 C 17.42 16.319 17.406 16.511 17.381 16.695 C 17.299 17.27 17.103 17.793 16.793 18.247 C 16.658 18.438 16.48 18.606 16.296 18.778 C 15.906 19.103 15.206 19.466 14.594 19.616 C 13.794 19.65 13.364 19.628 13.242 19.615 C 12.03 19.362 10.903 18.762 10 17.824 C 9.097 18.762 7.97 19.362 6.758 19.615 C 6.636 19.628 6.206 19.65 5.406 19.616 C 4.794 19.466 4.094 19.103 3.704 18.778 C 3.52 18.606 3.342 18.438 3.207 18.247 C 2.897 17.793 2.701 17.27 2.619 16.695 C 2.594 16.511 2.58 16.319 2.58 16.119 C 2.58 15.913 2.582 15.581 2.587 15.35 C 2.594 15.107 2.601 14.827 2.604 14.748 C 1.36 14.443 0.622 13.548 0.272 12.45 C -0.087 11.32 -0.056 9.944 0.164 8.622 C 0.387 7.286 0.816 5.924 1.324 4.782 C 1.818 3.669 2.435 2.657 3.085 2.117 C 4.004 1.354 5.257 0.831 6.48 0.499 C 7.712 0.163 8.986 0 10 0 Z M 10 1.528 C 9.129 1.528 7.99 1.67 6.88 1.972 C 5.762 2.276 4.743 2.724 4.06 3.291 C 3.691 3.598 3.191 4.339 2.719 5.402 C 2.26 6.435 1.87 7.673 1.67 8.872 C 1.468 10.087 1.472 11.187 1.726 11.987 C 1.914 12.577 2.223 12.974 2.7 13.176 C 2.829 11.658 3.08 9.913 3.537 7.525 C 3.617 7.111 4.016 6.84 4.43 6.919 C 4.844 6.998 5.115 7.399 5.036 7.812 C 4.481 10.708 4.242 12.61 4.153 14.301 C 4.12 14.919 4.107 15.513 4.107 16.119 C 4.107 16.94 4.42 17.432 4.828 17.724 C 5.263 18.035 5.894 18.177 6.586 18.099 C 7.561 17.988 8.448 17.483 8.908 16.701 C 9.092 16.329 9.181 16 9.181 16 C 9.218 15.831 9.237 15.655 9.237 15.471 L 9.236 15.387 L 9.236 15.025 C 8.864 14.731 8.385 14.251 8.136 13.677 C 8.021 13.411 8.053 13.118 8.196 12.89 C 8.328 12.678 8.526 12.563 8.696 12.51 C 8.974 12.424 9.44 12.326 10 12.326 C 10.56 12.326 11.024 12.424 11.303 12.51 L 11.435 12.561 C 11.568 12.626 11.704 12.73 11.804 12.89 C 11.947 13.118 11.979 13.411 11.863 13.677 C 11.614 14.251 11.136 14.731 10.763 15.025 L 10.763 15.387 L 10.763 15.472 C 10.764 16.944 11.996 17.938 13.414 18.099 C 14.106 18.177 14.737 18.035 15.173 17.724 C 15.581 17.432 15.894 16.94 15.894 16.119 C 15.894 15.513 15.88 14.919 15.848 14.301 C 15.758 12.61 15.518 10.708 14.964 7.812 C 14.885 7.399 15.156 6.998 15.57 6.919 C 15.983 6.84 16.384 7.111 16.463 7.525 C 16.92 9.913 17.171 11.658 17.3 13.176 C 17.777 12.974 18.085 12.578 18.273 11.987 C 18.528 11.187 18.532 10.088 18.33 8.873 C 18.13 7.673 17.741 6.435 17.281 5.402 C 16.868 4.472 16.433 3.788 16.084 3.426 L 15.94 3.291 C 15.257 2.724 14.238 2.276 13.119 1.972 C 12.01 1.67 10.871 1.528 10 1.528 Z"/></g></svg><p>${msg}</p></div>`;
-      return;
-    }
-
-    feed.innerHTML = vis.map(r => {
-      const m = META[r.tipo];
-      const extraRow = (r.exData || r.exMotivo) ? `
-        <div class="rec-grid" style="margin-top:8px">
-          <div><div class="k">Data</div><div class="v mono">${esc(r.exData ? r.exData.split('-').reverse().join('/') : '—')}</div></div>
-          <div><div class="k">Motivo</div><div class="v">${esc(r.exMotivo || '—')}</div></div>
-        </div>` : '';
-      return `<div class="rec" style="border-left-color:${m.color}">
-        <div class="rec-top">
-          <span class="tag" style="color:${m.color};background:${m.bg}">${m.label}</span>
-          <span class="planta-chip">${esc(r.planta)}</span>
-          ${r.turno ? `<span class="turno-chip">${esc(r.turno)}</span>` : ''}
-          <span class="rec-time">${relTime(r.iso)}</span>
-          <button class="rec-del" data-id="${r.id}" aria-label="Remover">
-            <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
-            Excluir
-          </button>
-        </div>
-        <div class="rec-grid">
-          <div><div class="k">Entrega</div><div class="v mono">${esc(r.entrega || '—')}</div></div>
-          <div><div class="k">Item</div><div class="v mono">${esc(r.item)}</div></div>
-          <div><div class="k">Qtd</div><div class="v">${esc(r.qtd || '—')}</div></div>
-          <div><div class="k">Responsável</div><div class="v">${esc(r.colab)}</div></div>
-        </div>
-        ${extraRow}
-        ${r.obs ? `<div class="rec-obs">${esc(r.obs)}</div>` : ''}
-      </div>`;
-    }).join('');
+    const sel = document.getElementById('tipo');
+    sel.innerHTML = '<option value="">Selecione a ocorrência</option>' +
+      tipos.map(t => `<option value="${t}">${META[t].label}</option>`).join('');
+    tipoSel = null;
+    toggleExtras();
   }
 
-  /* ── Delete com confirmação (event delegation) ── */
-  document.getElementById('feed').addEventListener('click', e => {
-    const btn = e.target.closest('.rec-del');
-    if (!btn) { resetDel(); return; }
-    e.stopPropagation();
-    if (btn.classList.contains('confirming')) {
-      registros = registros.filter(r => r.id !== btn.dataset.id);
-      save(); render(); updateColabList(); pendingDel = null;
-    } else {
-      resetDel();
-      btn.classList.add('confirming');
-      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Confirmar?';
-      pendingDel = btn;
-    }
-  });
-  document.addEventListener('click', () => resetDel());
-  function resetDel() {
-    if (!pendingDel) return;
-    pendingDel.classList.remove('confirming');
-    pendingDel.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg> Excluir';
-    pendingDel = null;
+  /* ── Render (atualiza o dashboard) ── */
+  function render() {
+    if (typeof renderDashboard === 'function') renderDashboard();
   }
 
   /* ── Salvar ── */
@@ -885,7 +1162,7 @@ textarea { resize: vertical; min-height: 68px; }
     if (!tipoSel) return toast('Selecione o tipo de ocorrência', false);
     if (!planta)  return toast('Selecione a planta', false);
     if (!turno)   return toast('Selecione o turno', false);
-    if (!SEM_ENTREGA.includes(tipoSel) && !entrega) return toast('Informe o número da entrega', false);
+    if (COM_ENTREGA.includes(tipoSel) && !entrega) return toast('Informe o número da entrega', false);
     if (!colab)   return toast('Informe o colaborador', false);
     if (!item)    return toast('Informe o item', false);
     if (!qtd)     return toast('Informe a quantidade', false);
@@ -948,25 +1225,13 @@ textarea { resize: vertical; min-height: 68px; }
     }
   });
 
-  /* ── Filtros ── */
-  document.querySelectorAll('.filter-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      filtroTipo = pill.dataset.tipo;
-      render();
-    });
-  });
-  document.getElementById('f-planta').addEventListener('change', e => { filtroPlt = e.target.value; render(); });
-  document.getElementById('f-busca').addEventListener('input', e => { busca = e.target.value.trim(); render(); });
-
   /* ── Exportar CSV ── */
   document.getElementById('btn-export').addEventListener('click', () => {
     if (!registros.length) return toast('Nenhum registro para exportar', false);
     const header = ['Data registro', 'Hora', 'Turno', 'Planta', 'Tipo', 'Entrega', 'Item', 'Quantidade', 'Colaborador', 'Data ocorrência', 'Motivo', 'Observação'];
     const rows = registros.map(r => [
       r.data, r.hora, r.turno || '', r.planta,
-      META[r.tipo].label, r.entrega, r.item, r.qtd || '', r.colab,
+      (META[r.tipo] ? META[r.tipo].label : r.tipo), r.entrega, r.item, r.qtd || '', r.colab,
       r.exData ? r.exData.split('-').reverse().join('/') : '', r.exMotivo || '', r.obs || ''
     ]);
     const csv = [header, ...rows]
@@ -983,229 +1248,422 @@ textarea { resize: vertical; min-height: 68px; }
   /* ── Imprimir ── */
   document.getElementById('btn-print').addEventListener('click', () => window.print());
 
-  /* ── Init ── */
+  /* ── Sub-abas (somente Gestão de Estoque) ── */
+  let subAtual = 'ocorrencias';
+  function aplicarSubaba() {
+    document.querySelectorAll('.subtab').forEach(s =>
+      s.classList.toggle('active', s.dataset.subtab === subAtual));
+    document.getElementById('subpanel-ocorrencias').hidden = subAtual !== 'ocorrencias';
+    document.getElementById('subpanel-auditorias').hidden  = subAtual !== 'auditorias';
+  }
+  function atualizarSubtabs() {
+    // Sub-abas só aparecem em Gestão de Estoque
+    const mostra = abaAtual === 'estoque';
+    document.getElementById('subtabs').hidden = !mostra;
+    if (!mostra) {
+      // Outras gestões usam apenas o painel de ocorrências
+      document.getElementById('subpanel-ocorrencias').hidden = false;
+      document.getElementById('subpanel-auditorias').hidden  = true;
+    } else {
+      aplicarSubaba();
+    }
+  }
+  document.querySelectorAll('.subtab').forEach(s => {
+    s.addEventListener('click', () => { subAtual = s.dataset.subtab; aplicarSubaba(); });
+  });
+
+  /* ── Auditorias ── */
+  let audFile = null;
+  function popularAuditorias() {
+    const sel = document.getElementById('aud-tipo');
+    sel.innerHTML = '<option value="">Selecione a auditoria</option>' +
+      TIPOS_AUDITORIA.map(t => `<option value="${t}">${META[t].label}</option>`).join('');
+  }
+  function fmtBytes(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+    return (b / 1048576).toFixed(1) + ' MB';
+  }
+  function audToast(msg, ok) {
+    const t = document.getElementById('aud-toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + (ok ? 'ok' : 'err');
+    if (ok) setTimeout(() => t.classList.remove('show'), 2800);
+  }
+  function setAudFile(file) {
+    if (!file) return;
+    const nome = file.name.toLowerCase();
+    const ok = nome.endsWith('.csv') || nome.endsWith('.xlsx') || nome.endsWith('.xls');
+    if (!ok) {
+      return audToast('Selecione um arquivo .csv ou .xlsx', false);
+    }
+    audFile = file;
+    document.getElementById('aud-fileinfo').hidden = false;
+    document.getElementById('aud-fi-name').textContent = file.name;
+    document.getElementById('aud-fi-meta').textContent = fmtBytes(file.size);
+  }
+  const dz = document.getElementById('aud-dropzone');
+  const audInput = document.getElementById('aud-file');
+  dz.addEventListener('click', () => audInput.click());
+  dz.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); audInput.click(); } });
+  audInput.addEventListener('change', e => setAudFile(e.target.files[0]));
+  ['dragenter', 'dragover'].forEach(ev =>
+    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach(ev =>
+    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+  dz.addEventListener('drop', e => { if (e.dataTransfer.files.length) setAudFile(e.dataTransfer.files[0]); });
+
+  function limparAuditoria() {
+    audFile = null;
+    document.getElementById('aud-tipo').value = '';
+    document.getElementById('aud-planta').value = '';
+    document.getElementById('aud-colab').value = '';
+    audInput.value = '';
+    document.getElementById('aud-fileinfo').hidden = true;
+  }
+  document.getElementById('aud-limpar').addEventListener('click', () => {
+    limparAuditoria();
+    document.getElementById('aud-toast').classList.remove('show');
+  });
+
+  document.getElementById('aud-iniciar').addEventListener('click', () => {
+    const tipo   = document.getElementById('aud-tipo').value;
+    const planta = document.getElementById('aud-planta').value;
+    const colab  = document.getElementById('aud-colab').value.trim();
+
+    if (!tipo)    return audToast('Selecione a auditoria', false);
+    if (!planta)  return audToast('Selecione a planta', false);
+    if (!colab)   return audToast('Informe o colaborador', false);
+    if (!audFile) return audToast('Envie o arquivo', false);
+
+    const nome = audFile.name.toLowerCase();
+    const ehExcel = nome.endsWith('.xlsx') || nome.endsWith('.xls');
+    const reader = new FileReader();
+
+    if (ehExcel) {
+      if (typeof XLSX === 'undefined') return audToast('Leitor de XLSX indisponível', false);
+      reader.onload = () => {
+        let linhas;
+        try { linhas = parseXLSX(reader.result); }
+        catch (_) { return audToast('Não foi possível ler o XLSX', false); }
+        if (!linhas.length) return audToast('A planilha está vazia', false);
+        iniciarTela(tipo, planta, colab, linhas);
+      };
+      reader.onerror = () => audToast('Falha ao ler o arquivo', false);
+      reader.readAsArrayBuffer(audFile);
+    } else {
+      reader.onload = () => {
+        let linhas;
+        try { linhas = parseCSV(reader.result); }
+        catch (_) { return audToast('Não foi possível ler o CSV', false); }
+        if (!linhas.length) return audToast('O arquivo está vazio', false);
+        iniciarTela(tipo, planta, colab, linhas);
+      };
+      reader.onerror = () => audToast('Falha ao ler o arquivo', false);
+      reader.readAsText(audFile, 'UTF-8');
+    }
+  });
+
+  /* ── Parser XLSX (lê a 1ª aba como matriz de linhas) ── */
+  function parseXLSX(arrayBuffer) {
+    const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const matriz = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: '' });
+    return matriz
+      .map(r => r.map(c => (c == null ? '' : String(c).trim())))
+      .filter(r => r.some(c => c !== ''));
+  }
+
+  /* ── Parser CSV (suporta aspas, vírgula e ponto-e-vírgula) ── */
+  function parseCSV(text) {
+    text = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    // Detecta separador pela 1ª linha
+    const head = text.slice(0, text.indexOf('\n') === -1 ? text.length : text.indexOf('\n'));
+    const sep = (head.split(';').length > head.split(',').length) ? ';' : ',';
+    const rows = [];
+    let row = [], val = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (q) {
+        if (ch === '"') { if (text[i + 1] === '"') { val += '"'; i++; } else q = false; }
+        else val += ch;
+      } else {
+        if (ch === '"') q = true;
+        else if (ch === sep) { row.push(val.trim()); val = ''; }
+        else if (ch === '\n') { row.push(val.trim()); rows.push(row); row = []; val = ''; }
+        else val += ch;
+      }
+    }
+    if (val !== '' || row.length) { row.push(val.trim()); rows.push(row); }
+    // Remove linhas totalmente vazias
+    return rows.filter(r => r.some(c => c !== ''));
+  }
+
+  /* ── Estado da auditoria ativa ── */
+  let audAtiva = null; // { tipo, planta, colab, schema, dados:[{...}], inicio }
+
+  /* ── Inicia a tela de conferência ── */
+  function iniciarTela(tipo, planta, colab, linhas) {
+    const schema = AUD_SCHEMA[tipo];
+    if (!schema) return audToast('Layout não configurado para esta auditoria', false);
+
+    // 1ª linha do CSV = cabeçalho; tenta casar com o schema por nome, senão usa posição.
+    const header = linhas[0].map(h => h.toLowerCase());
+    const corpo = linhas.slice(1);
+    const idxDe = (col, pos) => {
+      const alvo = col.toLowerCase();
+      let i = header.findIndex(h => h === alvo);
+      if (i === -1) i = header.findIndex(h => h.includes(alvo) || alvo.includes(h));
+      return i === -1 ? pos : i;
+    };
+
+    const dados = corpo.map(cols => {
+      const reg = {};
+      schema.forEach((def, pos) => {
+        if (def.e) { reg[def.c] = ''; }           // editável começa vazio
+        else { reg[def.c] = cols[idxDe(def.c, pos)] || ''; } // base vem do arquivo
+      });
+      return reg;
+    });
+
+    audAtiva = { tipo, planta, colab, schema, dados, inicio: new Date() };
+    montarTabela();
+    document.getElementById('aud-tela').hidden = false;
+    document.getElementById('aud-tela-eyebrow').textContent = 'Auditoria em andamento';
+    document.getElementById('aud-tela-title').textContent = META[tipo].label;
+    document.getElementById('aud-tela-meta').textContent =
+      `${planta} · ${colab} · ${dados.length} ${dados.length === 1 ? 'item' : 'itens'} · iniciada às ${audAtiva.inicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+    audToast(`Auditoria "${META[tipo].label}" iniciada ✓`, true);
+    document.getElementById('aud-tela').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ── Monta cabeçalho + linhas da tabela ── */
+  function montarTabela() {
+    const { schema, dados } = audAtiva;
+    document.getElementById('aud-thead').innerHTML =
+      '<tr><th>#</th>' + schema.map(d => `<th>${esc(d.c)}${d.e ? ' <span style="color:var(--accent)">•</span>' : ''}</th>`).join('') + '</tr>';
+
+    const tbody = document.getElementById('aud-tbody');
+    tbody.innerHTML = dados.map((reg, ri) => {
+      const cells = schema.map((d, ci) => {
+        if (!d.e) return `<td class="${/item|ean|qtd|valor|preço|local/i.test(d.c) ? 'sis-cell' : ''}">${esc(reg[d.c] || '—')}</td>`;
+        if (d.t === 'select') {
+          const opts = '<option value="">—</option>' + d.o.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+          return `<td><select class="cont" data-r="${ri}" data-c="${esc(d.c)}" style="width:auto;min-width:120px">${opts}</select></td>`;
+        }
+        const tipoInput = d.t === 'num' ? 'number' : 'text';
+        return `<td><input class="cont" type="${tipoInput}" data-r="${ri}" data-c="${esc(d.c)}" placeholder="—"></td>`;
+      }).join('');
+      return `<tr><td class="id-cell">${ri + 1}</td>${cells}</tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('.cont').forEach(el => {
+      el.addEventListener('input', onCellChange);
+      el.addEventListener('change', onCellChange);
+    });
+    atualizarResumo();
+  }
+
+  function onCellChange(e) {
+    const r = +e.target.dataset.r, c = e.target.dataset.c;
+    audAtiva.dados[r][c] = e.target.value;
+    atualizarResumo();
+  }
+
+  /* ── Resumo: total, auditados, divergentes ── */
+  function colDe(regex) { return audAtiva.schema.find(d => regex.test(d.c)); }
+  function atualizarResumo() {
+    const { dados } = audAtiva;
+    const total = dados.length;
+    const cAud = colDe(/audit/i);   // "Auditado?" / "Auditado"
+    const cSit = colDe(/situa/i);   // "Situação"
+    const cRet = colDe(/retirado/i);
+    const auditados = (cAud || cRet)
+      ? dados.filter(r => { const v = (r[(cAud || cRet).c] || '').toLowerCase(); return v && v !== 'não' && v !== 'nao'; }).length
+      : dados.filter(r => audAtiva.schema.some(d => d.e && (r[d.c] || '') !== '')).length;
+    const divergentes = cSit ? dados.filter(r => /diverg/i.test(r[cSit.c] || '')).length : 0;
+    const pend = total - auditados;
+
+    document.getElementById('aud-resumo').innerHTML = `
+      <div class="stat-sm" style="border-left-color:var(--accent)"><div class="n">${total}</div><div class="l">Itens</div></div>
+      <div class="stat-sm" style="border-left-color:var(--ok)"><div class="n" style="color:var(--ok)">${auditados}</div><div class="l">Auditados</div></div>
+      <div class="stat-sm" style="border-left-color:var(--ink-3)"><div class="n" style="color:var(--ink-3)">${pend}</div><div class="l">Pendentes</div></div>
+      <div class="stat-sm" style="border-left-color:var(--c-cancel)"><div class="n" style="color:var(--c-cancel)">${divergentes}</div><div class="l">Divergentes</div></div>`;
+  }
+
+  /* ── Finalizar: exporta CSV preenchido ── */
+  document.getElementById('aud-finalizar').addEventListener('click', () => {
+    if (!audAtiva) return;
+    const { schema, dados, tipo, planta, colab } = audAtiva;
+    const header = schema.map(d => d.c);
+    const rows = dados.map(r => schema.map(d => r[d.c] || ''));
+    const csv = [header, ...rows]
+      .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const nomeArq = META[tipo].label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const a = Object.assign(document.createElement('a'), {
+      href: url, download: `auditoria_${nomeArq}_${new Date().toISOString().slice(0, 10)}.csv`
+    });
+    a.click();
+    URL.revokeObjectURL(url);
+    const t = document.getElementById('aud-tela-toast');
+    t.textContent = `Auditoria finalizada e exportada — ${dados.length} itens`;
+    t.className = 'toast show ok';
+    setTimeout(() => t.classList.remove('show'), 3200);
+  });
+
+  document.getElementById('aud-cancelar').addEventListener('click', () => {
+    audAtiva = null;
+    document.getElementById('aud-tela').hidden = true;
+    limparAuditoria();
+  });
+
+  /* ── Dashboard ── */
+  // Mapa tipo -> gestão (a partir de ABAS)
+  const TIPO_GESTAO = {};
+  Object.keys(ABAS).forEach(g => ABAS[g].tipos.forEach(t => { TIPO_GESTAO[t] = g; }));
+  TIPOS_AUDITORIA.forEach(t => { if (!TIPO_GESTAO[t]) TIPO_GESTAO[t] = 'estoque'; });
+  const GESTAO_LABEL = { estoque: 'Estoque', pedidos: 'Pedidos', insumos: 'Insumos', paletes: 'Paletes' };
+
+  let dFiltros = { gestao: '', planta: '', periodo: '' };
+  const dashCharts = {};
+
+  function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  function dadosFiltrados() {
+    let r = registros.slice();
+    if (dFiltros.gestao) r = r.filter(x => TIPO_GESTAO[x.tipo] === dFiltros.gestao);
+    if (dFiltros.planta) r = r.filter(x => x.planta === dFiltros.planta);
+    if (dFiltros.periodo) {
+      const dias = parseInt(dFiltros.periodo, 10);
+      const limite = new Date(); limite.setDate(limite.getDate() - dias);
+      r = r.filter(x => new Date(x.iso) >= limite);
+    }
+    return r;
+  }
+
+  function destroyChart(key) { if (dashCharts[key]) { dashCharts[key].destroy(); dashCharts[key] = null; } }
+
+  function toggleEmpty(canvasId, emptyId, vazio) {
+    document.getElementById(canvasId).style.display = vazio ? 'none' : '';
+    document.getElementById(emptyId).hidden = !vazio;
+  }
+
+  function renderDashboard() {
+    if (typeof Chart === 'undefined') return;
+    const dados = dadosFiltrados();
+
+    // KPIs
+    document.getElementById('k-total').textContent   = dados.length;
+    document.getElementById('k-filiais').textContent = new Set(dados.map(r => r.planta)).size;
+    document.getElementById('k-tipos').textContent   = new Set(dados.map(r => r.tipo)).size;
+    const hojeStr = new Date().toDateString();
+    document.getElementById('k-hoje').textContent =
+      dados.filter(r => new Date(r.iso).toDateString() === hojeStr).length;
+
+    const ink2 = cssVar('--ink-2'), ink3 = cssVar('--ink-3'), line = cssVar('--line-soft'), accent = cssVar('--primary');
+    Chart.defaults.color = ink3;
+    Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+
+    const PALETA = ['#4E2096','#5B8DEF','#E0A93B','#4FD1A1','#C57BF0','#F08C4B','#3DB8C4','#D6557E','#7E8AF0','#9AA0AE','#88C940','#F2655C'];
+
+    /* 1) Comparativo por filial (barras) */
+    (() => {
+      const por = {};
+      dados.forEach(r => { por[r.planta] = (por[r.planta] || 0) + 1; });
+      const labels = Object.keys(por).sort((a, b) => por[b] - por[a]);
+      destroyChart('filial');
+      toggleEmpty('chart-filial', 'empty-filial', labels.length === 0);
+      if (!labels.length) return;
+      dashCharts.filial = new Chart(document.getElementById('chart-filial'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Ocorrências', data: labels.map(l => por[l]), backgroundColor: accent, borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+          scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: line }, ticks: { precision: 0 } } } }
+      });
+    })();
+
+    /* 2) Por tipo (barras horizontais) */
+    (() => {
+      const por = {};
+      dados.forEach(r => { por[r.tipo] = (por[r.tipo] || 0) + 1; });
+      const tipos = Object.keys(por).sort((a, b) => por[b] - por[a]);
+      destroyChart('tipo');
+      toggleEmpty('chart-tipo', 'empty-tipo', tipos.length === 0);
+      if (!tipos.length) return;
+      dashCharts.tipo = new Chart(document.getElementById('chart-tipo'), {
+        type: 'bar',
+        data: { labels: tipos.map(t => META[t] ? META[t].label : t),
+          datasets: [{ data: tipos.map(t => por[t]), backgroundColor: tipos.map(t => META[t] ? META[t].color : '#9AA0AE'), borderRadius: 6 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+          scales: { x: { beginAtZero: true, grid: { color: line }, ticks: { precision: 0 } }, y: { grid: { display: false } } } }
+      });
+    })();
+
+    /* 3) Por gestão (rosca) */
+    (() => {
+      const por = {};
+      dados.forEach(r => { const g = TIPO_GESTAO[r.tipo] || 'outros'; por[g] = (por[g] || 0) + 1; });
+      const gs = Object.keys(por);
+      destroyChart('gestao');
+      toggleEmpty('chart-gestao', 'empty-gestao', gs.length === 0);
+      if (!gs.length) return;
+      dashCharts.gestao = new Chart(document.getElementById('chart-gestao'), {
+        type: 'doughnut',
+        data: { labels: gs.map(g => GESTAO_LABEL[g] || g),
+          datasets: [{ data: gs.map(g => por[g]), backgroundColor: PALETA, borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '62%',
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } } }
+      });
+    })();
+
+    /* 4) Evolução no tempo (linha, por dia) */
+    (() => {
+      const por = {};
+      dados.forEach(r => { const d = new Date(r.iso).toLocaleDateString('pt-BR'); por[d] = (por[d] || 0) + 1; });
+      const dias = Object.keys(por).sort((a, b) => {
+        const pa = a.split('/').reverse().join(''), pb = b.split('/').reverse().join('');
+        return pa.localeCompare(pb);
+      });
+      destroyChart('tempo');
+      toggleEmpty('chart-tempo', 'empty-tempo', dias.length === 0);
+      if (!dias.length) return;
+      dashCharts.tempo = new Chart(document.getElementById('chart-tempo'), {
+        type: 'line',
+        data: { labels: dias, datasets: [{ label: 'Ocorrências', data: dias.map(d => por[d]),
+          borderColor: accent, backgroundColor: 'rgba(78,32,150,.12)', fill: true, tension: .3, pointRadius: 3 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+          scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: line }, ticks: { precision: 0 } } } }
+      });
+    })();
+  }
+
+  document.getElementById('d-gestao').addEventListener('change', e => { dFiltros.gestao = e.target.value; renderDashboard(); });
+  document.getElementById('d-planta').addEventListener('change', e => { dFiltros.planta = e.target.value; renderDashboard(); });
+  document.getElementById('d-periodo').addEventListener('change', e => { dFiltros.periodo = e.target.value; renderDashboard(); });
+
   /* ── Tabs ── */
+  function mostrarPainelPrincipal(target) {
+    const isDash = target === 'dashboard';
+    document.getElementById('tab-gestao').hidden    = isDash;
+    document.getElementById('tab-dashboard').hidden = !isDash;
+    // Botões de topo que só fazem sentido fora do dashboard
+    document.getElementById('btn-clear-all').style.display = isDash ? 'none' : '';
+    if (isDash) renderDashboard();
+  }
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       const target = tab.dataset.tab;
-      document.getElementById('tab-ocorrencias').hidden = target !== 'ocorrencias';
-      document.getElementById('tab-auditorias').hidden  = target !== 'auditorias';
+      mostrarPainelPrincipal(target);
+      if (ABAS.hasOwnProperty(target)) { abaAtual = target; aplicarAba(); atualizarSubtabs(); }
     });
   });
 
-  /* ══════════════ AUDITORIAS ══════════════ */
-  const AUD_KEY = 'auditorias-petlove-v1';
-  let audRows = [];      // { id, sistema, contado }
-  let audCols = [];      // nomes de colunas detectadas
-  let audRaw = [];       // linhas brutas como objetos
-  let audFilter = '';
-  let audBusca = '';
-  let audFileName = '';
-
-  function audToast(msg, ok, which) {
-    const t = document.getElementById(which || 'aud-toast');
-    t.textContent = msg;
-    t.className = 'toast show ' + (ok ? 'ok' : 'err');
-    if (ok) setTimeout(() => t.classList.remove('show'), 2800);
-  }
-
-  function checkStartReady() {
-    const ok = document.getElementById('aud-tipo').value &&
-               document.getElementById('aud-planta').value &&
-               document.getElementById('aud-colab').value.trim() &&
-               audRaw.length &&
-               document.getElementById('aud-col-id').value &&
-               document.getElementById('aud-col-sis').value;
-    document.getElementById('aud-start').disabled = !ok;
-  }
-  ['aud-tipo', 'aud-planta', 'aud-colab', 'aud-col-id', 'aud-col-sis'].forEach(id => {
-    document.getElementById(id).addEventListener('input', checkStartReady);
-    document.getElementById(id).addEventListener('change', checkStartReady);
-  });
-
-  /* ── Leitura de planilha ── */
-  const dz = document.getElementById('aud-dropzone');
-  const fileInput = document.getElementById('aud-file');
-  ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
-  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
-  dz.addEventListener('drop', e => { if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
-  fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
-
-  function handleFile(file) {
-    const ok = /\.(xlsx|xls|csv)$/i.test(file.name);
-    if (!ok) return audToast('Formato inválido. Use .xlsx, .xls ou .csv', false);
-    audFileName = file.name;
-    const reader = new FileReader();
-    reader.onload = e => {
-      try {
-        const wb = XLSX.read(e.target.result, { type: 'array' });
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        audRaw = XLSX.utils.sheet_to_json(ws, { defval: '' });
-        if (!audRaw.length) return audToast('A planilha está vazia', false);
-        audCols = Object.keys(audRaw[0]);
-
-        // file info
-        const fi = document.getElementById('aud-fileinfo');
-        fi.hidden = false;
-        fi.innerHTML = `<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--ok);fill:none;stroke-width:2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <span class="fi-name">${esc(file.name)}</span>
-          <span class="fi-meta">${audRaw.length} linhas · ${audCols.length} colunas</span>`;
-
-        // popular selects de mapeamento + heurística
-        const idGuess  = audCols.find(c => /sku|item|produto|c[óo]digo|endere[çc]o|palete|id/i.test(c)) || audCols[0];
-        const sisGuess = audCols.find(c => /sistema|estoque|saldo|teor|qtd|quant/i.test(c)) || audCols[1] || audCols[0];
-        const opts = audCols.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
-        const selId = document.getElementById('aud-col-id');
-        const selSis = document.getElementById('aud-col-sis');
-        selId.innerHTML = opts; selSis.innerHTML = opts;
-        selId.value = idGuess; selSis.value = sisGuess;
-        document.getElementById('aud-mapwrap').hidden = false;
-
-        checkStartReady();
-        audToast('Planilha carregada ✓', true);
-      } catch (err) {
-        audToast('Erro ao ler a planilha', false);
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  }
-
-  /* ── Iniciar contagem ── */
-  document.getElementById('aud-start').addEventListener('click', () => {
-    const colId = document.getElementById('aud-col-id').value;
-    const colSis = document.getElementById('aud-col-sis').value;
-    audRows = audRaw.map((r, i) => ({
-      idx: i,
-      id: String(r[colId] ?? '').trim() || '(vazio)',
-      sistema: Number(String(r[colSis] ?? '').replace(',', '.')) || 0,
-      contado: null
-    }));
-    document.getElementById('aud-count-title').textContent =
-      'Contagem · ' + document.getElementById('aud-tipo').value;
-    document.getElementById('aud-count-eyebrow').textContent =
-      document.getElementById('aud-planta').value + ' · ' + document.getElementById('aud-colab').value.trim();
-    document.getElementById('aud-countcard').hidden = false;
-    audFilter = ''; audBusca = '';
-    document.querySelectorAll('[data-audfilter]').forEach(p => p.classList.toggle('active', p.dataset.audfilter === ''));
-    document.getElementById('aud-busca').value = '';
-    renderAud();
-    document.getElementById('aud-countcard').scrollIntoView({ behavior: 'smooth' });
-  });
-
-  function statusOf(row) {
-    if (row.contado === null || row.contado === '') return 'pendente';
-    return Number(row.contado) === row.sistema ? 'ok' : 'divergente';
-  }
-
-  function renderAud() {
-    const total = audRows.length;
-    const cont = audRows.filter(r => r.contado !== null && r.contado !== '').length;
-    const div = audRows.filter(r => statusOf(r) === 'divergente').length;
-    const ok = audRows.filter(r => statusOf(r) === 'ok').length;
-    document.getElementById('aud-st-total').textContent = total;
-    document.getElementById('aud-st-cont').textContent = cont;
-    document.getElementById('aud-st-div').textContent = div;
-    document.getElementById('aud-st-ok').textContent = ok;
-
-    let vis = audRows;
-    if (audFilter) vis = vis.filter(r => statusOf(r) === audFilter);
-    if (audBusca) { const q = audBusca.toLowerCase(); vis = vis.filter(r => r.id.toLowerCase().includes(q)); }
-
-    const tbody = document.getElementById('aud-tbody');
-    if (!vis.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-3);padding:28px">Nenhum item para o filtro</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = vis.map(r => {
-      const st = statusOf(r);
-      const diff = (r.contado === null || r.contado === '') ? null : Number(r.contado) - r.sistema;
-      const diffCls = diff === null ? 'div-zero' : diff > 0 ? 'div-pos' : diff < 0 ? 'div-neg' : 'div-zero';
-      const diffTxt = diff === null ? '—' : (diff > 0 ? '+' + diff : diff);
-      const stLabel = { pendente: 'Pendente', ok: 'Conforme', divergente: 'Divergente' }[st];
-      return `<tr>
-        <td class="id-cell">${esc(r.id)}</td>
-        <td class="sis-cell">${r.sistema}</td>
-        <td><input class="cont" type="number" data-idx="${r.idx}" value="${r.contado === null ? '' : r.contado}" placeholder="—"></td>
-        <td class="div-cell ${diffCls}">${diffTxt}</td>
-        <td><span class="aud-status ${st}">${stLabel}</span></td>
-      </tr>`;
-    }).join('');
-  }
-
-  document.getElementById('aud-tbody').addEventListener('input', e => {
-    const inp = e.target.closest('input.cont');
-    if (!inp) return;
-    const idx = Number(inp.dataset.idx);
-    const row = audRows.find(r => r.idx === idx);
-    row.contado = inp.value === '' ? null : Number(inp.value);
-    // atualiza só stats + a célula da linha sem re-render completo (mantém foco)
-    const tr = inp.closest('tr');
-    const diff = row.contado === null ? null : row.contado - row.sistema;
-    const st = statusOf(row);
-    const diffCell = tr.querySelector('.div-cell');
-    diffCell.className = 'div-cell ' + (diff === null ? 'div-zero' : diff > 0 ? 'div-pos' : diff < 0 ? 'div-neg' : 'div-zero');
-    diffCell.textContent = diff === null ? '—' : (diff > 0 ? '+' + diff : diff);
-    const stCell = tr.querySelector('.aud-status');
-    stCell.className = 'aud-status ' + st;
-    stCell.textContent = { pendente: 'Pendente', ok: 'Conforme', divergente: 'Divergente' }[st];
-    // stats
-    document.getElementById('aud-st-cont').textContent = audRows.filter(r => r.contado !== null && r.contado !== '').length;
-    document.getElementById('aud-st-div').textContent = audRows.filter(r => statusOf(r) === 'divergente').length;
-    document.getElementById('aud-st-ok').textContent = audRows.filter(r => statusOf(r) === 'ok').length;
-  });
-
-  document.querySelectorAll('[data-audfilter]').forEach(p => {
-    p.addEventListener('click', () => {
-      document.querySelectorAll('[data-audfilter]').forEach(x => x.classList.remove('active'));
-      p.classList.add('active');
-      audFilter = p.dataset.audfilter;
-      renderAud();
-    });
-  });
-  document.getElementById('aud-busca').addEventListener('input', e => { audBusca = e.target.value.trim(); renderAud(); });
-
-  /* ── Finalizar e exportar ── */
-  document.getElementById('aud-finish').addEventListener('click', () => {
-    const pend = audRows.filter(r => statusOf(r) === 'pendente').length;
-    if (pend > 0 && !confirm(`Há ${pend} item(ns) sem contagem. Exportar mesmo assim?`)) return;
-    const tipo = document.getElementById('aud-tipo').value;
-    const planta = document.getElementById('aud-planta').value;
-    const colab = document.getElementById('aud-colab').value.trim();
-    const header = ['Auditoria', 'Planta', 'Auditor', 'Data', 'Identificador', 'Qtd sistema', 'Qtd contada', 'Divergência', 'Status'];
-    const now = new Date().toLocaleString('pt-BR');
-    const rows = audRows.map(r => {
-      const st = statusOf(r);
-      const diff = (r.contado === null) ? '' : r.contado - r.sistema;
-      const stLabel = { pendente: 'Pendente', ok: 'Conforme', divergente: 'Divergente' }[st];
-      return [tipo, planta, colab, now, r.id, r.sistema, r.contado === null ? '' : r.contado, diff, stLabel];
-    });
-    const csv = [header, ...rows].map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n');
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = Object.assign(document.createElement('a'), { href: url, download: `auditoria_${tipo}_${new Date().toISOString().slice(0, 10)}.csv` });
-    a.click(); URL.revokeObjectURL(url);
-    audToast(`Auditoria exportada — ${audRows.length} itens`, true, 'aud-toast2');
-  });
-
-  function resetAud() {
-    audRows = []; audCols = []; audRaw = []; audFileName = '';
-    document.getElementById('aud-tipo').value = '';
-    document.getElementById('aud-planta').value = '';
-    document.getElementById('aud-colab').value = '';
-    document.getElementById('aud-file').value = '';
-    document.getElementById('aud-fileinfo').hidden = true;
-    document.getElementById('aud-mapwrap').hidden = true;
-    document.getElementById('aud-countcard').hidden = true;
-    document.getElementById('aud-start').disabled = true;
-  }
-  document.getElementById('aud-reset').addEventListener('click', resetAud);
-  document.getElementById('aud-cancel-count').addEventListener('click', () => {
-    if (confirm('Descartar esta contagem?')) document.getElementById('aud-countcard').hidden = true;
-  });
-
-  load(); updateColabList(); render();
+  load(); updateColabList(); popularAuditorias(); aplicarAba(); atualizarSubtabs(); mostrarPainelPrincipal('estoque');
 })();
 </script>
 </body>
