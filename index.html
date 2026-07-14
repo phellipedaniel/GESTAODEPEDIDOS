@@ -915,7 +915,6 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
   /* ── Gate: dispositivo + login ── */
   const AUTH_KEY = 'auth-petlove';
   const DEVICE_KEY = 'device-petlove';
-  const CRED = { user: 'controledeestoque', pass: 'controledeestoque123' };
   let deviceEscolhido = null;
 
   function aplicarDispositivo(dev) {
@@ -953,18 +952,37 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
 
   document.getElementById('login-back').addEventListener('click', mostrarDispositivo);
 
-  function tentarLogin() {
+  async function tentarLogin() {
     const u = document.getElementById('login-user').value.trim();
     const p = document.getElementById('login-pass').value;
-    if (u === CRED.user && p === CRED.pass) {
-      try { localStorage.setItem(AUTH_KEY, '1'); } catch (_) {}
-      document.getElementById('login-pass').value = '';
-      abrirApp();
-    } else {
-      const err = document.getElementById('login-err');
-      err.textContent = 'Usuário ou senha incorretos.';
-      document.getElementById('login-pass').value = '';
-      document.getElementById('login-pass').focus();
+    const btn = document.getElementById('login-btn');
+    const err = document.getElementById('login-err');
+    err.textContent = '';
+    if (!SHEETS_URL) { err.textContent = 'Backend não configurado.'; return; }
+    btn.disabled = true;
+    const txtOriginal = btn.textContent;
+    btn.textContent = 'Verificando...';
+    try {
+      const resp = await fetch(SHEETS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'login', user: u, pass: p })
+      });
+      const data = await resp.json();
+      if (data && data.ok) {
+        try { localStorage.setItem(AUTH_KEY, '1'); } catch (_) {}
+        document.getElementById('login-pass').value = '';
+        abrirApp();
+      } else {
+        err.textContent = 'Usuário ou senha incorretos.';
+        document.getElementById('login-pass').value = '';
+        document.getElementById('login-pass').focus();
+      }
+    } catch (_) {
+      err.textContent = 'Falha ao verificar login. Tente novamente.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = txtOriginal;
     }
   }
   document.getElementById('login-btn').addEventListener('click', tentarLogin);
