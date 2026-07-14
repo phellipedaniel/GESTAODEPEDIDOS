@@ -496,6 +496,7 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
         <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       </button>
       <div class="clock"><span class="pulse"></span><span id="clock">--:--:--</span></div>
+      <button id="btn-refresh-sheets" class="btn btn-ghost" title="Atualizar dados do Sheets" style="padding:4px 10px"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></button>
     </div>
   </header>
 
@@ -1429,7 +1430,7 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
     });
 
     save(); render(); updateColabList();
-    if (PED_TIPOS.includes(registros[0].tipo)) syncSheets(registros[0]);
+    syncSheets(registros[0]);
     toast('Registro salvo ✓', true);
 
     ['entrega', 'item', 'qtd', 'colab', 'obs'].forEach(id => {
@@ -1752,7 +1753,7 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
           reg.trat.fimIso = now; reg.trat.fimCE = ce;
         }
         save(); renderTratativas();
-        if (PED_TIPOS.includes(reg.tipo)) syncSheets(reg);
+        syncSheets(reg);
         toast(act === 'iniciar' ? 'Tratativa iniciada ✓' : 'Tratativa concluída ✓', true);
       });
     });
@@ -1777,7 +1778,7 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
         }
         reg.exMotivo = reg.motivo || '';
         save(); updateColabList(); renderTratativas();
-        if (PED_TIPOS.includes(reg.tipo)) syncSheets(reg);
+        syncSheets(reg);
         toast('Dados salvos ✓', true);
       });
     });
@@ -1851,7 +1852,11 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
   function syncSheets(reg) {
     if (!SHEETS_URL) return; // não configurado ainda
     try {
-      const payload = Object.assign({}, reg, { tempos: tratTempos(reg), tipoLabel: (META[reg.tipo] ? META[reg.tipo].label : reg.tipo) });
+      const payload = Object.assign({}, reg, {
+        tempos: tratTempos(reg),
+        tipoLabel: (META[reg.tipo] ? META[reg.tipo].label : reg.tipo),
+        aba: TIPO_GESTAO[reg.tipo] || ''
+      });
       fetch(SHEETS_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -1860,6 +1865,53 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
       }).catch(() => {});
     } catch (_) {}
   }
+
+  /* ── Leitura compartilhada: reconstrói um registro local a partir da linha vinda do Sheets ── */
+  function remoteRowToRegistro(row) {
+    let extras = {};
+    try { extras = row.camposExtras ? JSON.parse(row.camposExtras) : {}; } catch (_) { extras = {}; }
+    const reg = Object.assign({
+      id: row.id, iso: row.iso, data: row.data, hora: row.hora, mes: row.mes,
+      tipo: row.tipo, planta: row.planta, turno: row.turno, entrega: row.entrega,
+      colab: row.colab, item: row.item, qtd: row.qtd, obs: row.obs,
+      exData: row.exData, exMotivo: row.exMotivo
+    }, extras);
+    if (row.tratInicioIso || row.tratFimIso) {
+      reg.trat = {
+        inicioIso: row.tratInicioIso || '', inicioCE: row.tratInicioCE || '',
+        fimIso: row.tratFimIso || '', fimCE: row.tratFimCE || ''
+      };
+    }
+    return reg;
+  }
+
+  let fetchingRemote = false;
+  async function fetchRemote(showToast) {
+    if (!SHEETS_URL || fetchingRemote) return;
+    fetchingRemote = true;
+    try {
+      const resp = await fetch(SHEETS_URL + '?v=' + Date.now(), { method: 'GET' });
+      const data = await resp.json();
+      if (!data || !data.ok) throw new Error((data && data.error) || 'resposta inválida');
+      registros = (data.registros || [])
+        .filter(r => r.id)
+        .map(remoteRowToRegistro)
+        .sort((a, b) => new Date(b.iso) - new Date(a.iso));
+      save(); render(); updateColabList();
+      if (typeof renderTratativas === 'function') renderTratativas();
+      if (typeof renderDashPed === 'function') renderDashPed();
+      if (showToast) toast('Dados atualizados ✓', true);
+    } catch (err) {
+      if (showToast) toast('Falha ao atualizar do Sheets — usando dados locais', false);
+    } finally {
+      fetchingRemote = false;
+    }
+  }
+  // primeira carga + polling a cada 30s para refletir registros de outros dispositivos
+  setTimeout(() => fetchRemote(false), 300);
+  setInterval(() => fetchRemote(false), 30000);
+  const btnRefreshSheets = document.getElementById('btn-refresh-sheets');
+  if (btnRefreshSheets) btnRefreshSheets.addEventListener('click', () => fetchRemote(true));
   function dpFiltrados() {
     const ini = document.getElementById('dp-ini').value;
     const fim = document.getElementById('dp-fim').value;
