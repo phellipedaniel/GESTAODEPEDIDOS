@@ -291,6 +291,60 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
 [data-theme="dark"] .subtab.active { box-shadow: 0 1px 0 rgba(255,255,255,.04) inset; }
 .subpanel[hidden] { display: none; }
 
+/* ── Tratativas ── */
+.trat-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+.trat-filtros { display: flex; gap: 6px; flex-wrap: wrap; }
+.trat-fpill { cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 500; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--ink-3); }
+.trat-fpill:hover { color: var(--ink); border-color: var(--ink-3); }
+.trat-fpill.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+.trat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.trat-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+.trat-card::before { content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--tc, var(--accent)); opacity: .7; }
+.trat-card-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.trat-tipo { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.trat-estado { font-family: "Roboto Mono", monospace; font-size: 10px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; }
+.trat-estado.reg { color: var(--ink-3); background: var(--chip-bg); }
+.trat-estado.and { color: #E0A93B; background: rgba(224,169,59,.14); }
+.trat-estado.ok  { color: var(--ok); background: rgba(73,169,113,.14); }
+.trat-info { font-size: 12.5px; color: var(--ink-2); line-height: 1.6; }
+.trat-info b { color: var(--ink); font-weight: 500; }
+.trat-info .mono { font-family: "Roboto Mono", monospace; }
+.trat-timers { display: flex; flex-direction: column; gap: 5px; padding: 10px 12px; background: var(--panel-2); border-radius: 10px; }
+.trat-timer-row { display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; }
+.trat-timer-row .lbl { color: var(--ink-3); }
+.trat-timer-row .val { font-family: "Roboto Mono", monospace; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+.trat-timer-row .val.live { color: #E0A93B; }
+.trat-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.trat-actions .btn { flex: 1; justify-content: center; padding: 9px 12px; font-size: 12.5px; }
+.trat-ce-input { width: 100%; background: var(--panel-2); border: 1px solid var(--line); color: var(--ink); border-radius: 9px; padding: 8px 11px; font-size: 12.5px; font-family: inherit; }
+.trat-ce-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); }
+.trat-ce-label { font-size: 10.5px; color: var(--ink-3); margin-bottom: 4px; display: block; }
+.trat-empty { text-align: center; padding: 48px 24px; color: var(--ink-3); font-size: 13px; grid-column: 1 / -1; }
+.trat-complete { background: var(--panel-2); border: 1px dashed var(--line-strong, var(--ink-3)); border-radius: 10px; padding: 12px; }
+.trat-complete .field label { color: var(--ink-3); }
+
+/* ── Dashboard de Pedidos ── */
+.dp-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 16px; }
+.dp-kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+.dp-kpi .l { font-size: 11.5px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .05em; }
+.dp-kpi .n { font-family: "Gooper", "Inter"; font-size: 30px; font-weight: 700; letter-spacing: -.02em; margin-top: 4px; }
+.dp-kpi .s { font-size: 12px; color: var(--ink-3); margin-top: 3px; }
+.dp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 720px) { .dp-cols { grid-template-columns: 1fr; } }
+.dp-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 11px; }
+.dp-bar-row:last-child { margin-bottom: 0; }
+.dp-bar-lbl { font-size: 12.5px; color: var(--ink-2); min-width: 130px; text-align: right; flex-shrink: 0; }
+.dp-bar-track { flex: 1; height: 22px; background: var(--panel-2); border-radius: 7px; overflow: hidden; position: relative; }
+.dp-bar-fill { height: 100%; border-radius: 7px; min-width: 2px; transition: width .4s ease; }
+.dp-bar-val { font-family: "Roboto Mono", monospace; font-size: 12px; font-weight: 500; color: var(--ink); min-width: 62px; }
+.dp-empty { text-align: center; padding: 30px 16px; color: var(--ink-3); font-size: 13px; }
+.dp-matriz-tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12.5px; }
+.dp-matriz-tbl th, .dp-matriz-tbl td { padding: 9px 12px; border-bottom: 1px solid var(--line-soft); text-align: center; white-space: nowrap; }
+.dp-matriz-tbl th { background: var(--panel-2); color: var(--ink-3); font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; position: sticky; top: 0; }
+.dp-matriz-tbl th:first-child, .dp-matriz-tbl td:first-child { text-align: left; font-weight: 500; }
+.dp-matriz-tbl tbody tr:hover { background: var(--panel-2); }
+.dp-matriz-tbl .tot { font-weight: 600; color: var(--accent); }
+
 /* ── Audit grid ── */
 .grid-audit { display: flex; flex-direction: column; gap: 22px; }
 
@@ -480,6 +534,14 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
       <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Auditorias
     </button>
+    <button class="subtab" data-subtab="tratativas">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M12 2h0M9 2h6"/></svg>
+      Tratativas
+    </button>
+    <button class="subtab" data-subtab="dashped">
+      <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/></svg>
+      Dashboard
+    </button>
   </div>
 
   <!-- ── Painel: Registro de ocorrências ── -->
@@ -550,25 +612,9 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
           </div>
         </div>
 
-        <div class="extra" data-for="picking naoconformidade" hidden>
+        <div class="extra" id="extra-ped" hidden>
           <div class="extra-head"><span class="extra-line"></span><span class="extra-tag" id="extra-tag">Campos adicionais</span><span class="extra-line"></span></div>
-          <div class="row">
-            <div class="field">
-              <label for="ex-data">Data <span class="req">*</span></label>
-              <input id="ex-data" type="date">
-            </div>
-            <div class="field">
-              <label for="ex-motivo">Motivo <span class="req">*</span></label>
-              <select id="ex-motivo">
-                <option value="">Selecione o motivo</option>
-                <option value="Avariado">Avariado</option>
-                <option value="Vencido">Vencido</option>
-                <option value="Faltando">Faltando</option>
-                <option value="Trocado">Trocado</option>
-                <option value="Local de OM">Local de OM</option>
-              </select>
-            </div>
-          </div>
+          <div id="extra-ped-fields"></div>
         </div>
 
         <div class="field">
@@ -689,6 +735,66 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
 
   </div>
   </div><!-- /subpanel-auditorias -->
+
+  <!-- ── Painel: Tratativas ── -->
+  <div class="subpanel" id="subpanel-tratativas" hidden>
+    <div class="card">
+      <div class="card-h">
+        <span class="eyebrow">Cronômetro de resolução</span>
+        <h2>Tratativas de ocorrências</h2>
+        <p style="font-size:12.5px;color:var(--ink-3);margin-top:4px">Inicie e conclua a tratativa de cada ocorrência. O tempo é medido a partir do registro.</p>
+      </div>
+      <div class="card-b">
+        <div class="trat-toolbar">
+          <div class="trat-filtros" id="trat-filtros"></div>
+        </div>
+        <div class="trat-grid" id="trat-grid"></div>
+      </div>
+    </div>
+  </div><!-- /subpanel-tratativas -->
+
+  <!-- ── Painel: Dashboard de Pedidos ── -->
+  <div class="subpanel" id="subpanel-dashped" hidden>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-b" style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap">
+        <div class="field" style="margin:0">
+          <label for="dp-ini" style="font-size:11px">De</label>
+          <input id="dp-ini" type="date" style="width:auto">
+        </div>
+        <div class="field" style="margin:0">
+          <label for="dp-fim" style="font-size:11px">Até</label>
+          <input id="dp-fim" type="date" style="width:auto">
+        </div>
+        <button class="btn btn-ghost" id="dp-limpar">Limpar período</button>
+        <span style="font-size:12px;color:var(--ink-3);margin-left:auto" id="dp-resumo-periodo"></span>
+      </div>
+    </div>
+
+    <div class="dp-kpis" id="dp-kpis"></div>
+
+    <div class="dp-cols">
+      <div class="card">
+        <div class="card-h"><span class="eyebrow">Por tipo de ocorrência</span><h2>Distribuição</h2></div>
+        <div class="card-b"><div id="dp-por-tipo"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="eyebrow">Comparativo entre filiais</span><h2>Ocorrências por filial</h2></div>
+        <div class="card-b"><div id="dp-por-filial"></div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-h"><span class="eyebrow">Tempo de resolução</span><h2>Tempo médio por tipo</h2>
+        <p style="font-size:12.5px;color:var(--ink-3);margin-top:4px">Média do tempo entre registro e conclusão da tratativa (apenas ocorrências concluídas).</p>
+      </div>
+      <div class="card-b"><div id="dp-tempos"></div></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-h"><span class="eyebrow">Filial × Tipo</span><h2>Matriz de ocorrências</h2></div>
+      <div class="card-b" style="overflow:auto"><div id="dp-matriz"></div></div>
+    </div>
+  </div><!-- /subpanel-dashped -->
 
   </section><!-- /tab-gestao -->
 
@@ -920,7 +1026,7 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
     'pal-ajustes':          { label: 'Ajustes',                     color: '#E0A93B', bg: 'rgba(224,169,59,.14)' },
     'pal-nfs':              { label: 'Nfs',                          color: '#7E8AF0', bg: 'rgba(126,138,240,.14)' }
   };
-  const EXTRA_TIPOS = [];
+  const EXTRA_TIPOS = []; // (legado — campos extras agora vêm de PED_FIELDS)
 
   /* ── Tipos de Auditoria/Ronda (vão para a sub-aba Auditorias) ── */
   const TIPOS_AUDITORIA = [
@@ -936,8 +1042,81 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
     simNao:    ['Sim', 'Não'],
     situacao:  ['OK', 'Divergente'],
     statusCor: ['Pendente', 'Em andamento', 'Corrigido'],
-    statusGen: ['Pendente', 'OK', 'Divergente']
+    statusGen: ['Pendente', 'OK', 'Divergente'],
+    motivo:    ['Avariado', 'Vencido', 'Faltando', 'Trocado', 'Local de OM'],
+    turno:     ['1º', '2º', '3º'],
+    // Não conformidade
+    ncMotivo:  ['Avariado', 'Vencido', 'Faltando', 'Trocado', 'Local de OM', 'Sem EAN'],
+    ncSituacao:['Cancelada', 'Corrigida', 'Sugerida', 'Local de OM'],
+    ncArea:    ['PPB', 'M1', 'BLC'],
+    // Picking x Packing
+    ppMotivo:  ['Faltando', 'Sobrando', 'Vencido', 'Avariado', 'Trocado', 'Mofado', 'Data APG', 'Misturado', 'Sem bula', 'Sem EAN', 'Avariado e faltando'],
+    ppSituacao:['Corrigido', 'Cancelado', 'Recuperado', 'Extravio'],
+    // Packing x Expedição
+    peEvento:  ['Fim de picking', 'Inclusão de volume na carga', 'Fechamento de gaiola', 'Nota fiscal aceita', 'Exclusão de volume na carga', 'Cancelamento de NF', 'Conferência OK'],
+    peSituacao:['Conferência errada', 'Faturado com falta', 'Erro na qt. volume', 'Faturado com avaria', 'Troca de etiqueta', 'Não embalou', 'Embalado com falta', 'Embalou junto', 'Embalou em outra entrega', 'Avariado pelo embalador']
   };
+
+  /* ── Campos adicionais por tipo de Gestão de Pedidos ──
+     Campos comuns já coletados no formulário: entrega, item, qtd, colab, planta, turno.
+     Aqui só os campos EXTRAS de cada tipo. DATA e MÊS não entram (data = registro; mês derivado).
+     k: chave salva no registro | c: rótulo | t: 'text'|'num'|'date'|'select' | o: opções | req: obrigatório | ce: é o Login CE */
+  const PED_FIELDS = {
+    'ped-naoconformidade': [
+      { k: 'descricao', c: 'Descrição', t: 'text', req: true },
+      { k: 'local', c: 'Local', t: 'text' },
+      { k: 'localSugerido', c: 'Local identificado ou sugerido', t: 'text' },
+      { k: 'motivo', c: 'Motivo', t: 'select', o: OPT.ncMotivo, req: true },
+      { k: 'situacao', c: 'Situação', t: 'select', o: OPT.ncSituacao },
+      { k: 'areaEstoque', c: 'Área do estoque', t: 'select', o: OPT.ncArea }
+    ],
+    'ped-div-pick-pack': [
+      { k: 'descricao', c: 'Descrição', t: 'text', req: true },
+      { k: 'local', c: 'Local', t: 'text' },
+      { k: 'motivo', c: 'Motivo', t: 'select', o: OPT.ppMotivo, req: true },
+      { k: 'situacao', c: 'Situação', t: 'select', o: OPT.ppSituacao }
+    ],
+    'ped-div-pack-exp': [
+      { k: 'descricao', c: 'Descrição', t: 'text', req: true },
+      { k: 'qtdPecas', c: 'Qtd pçs', t: 'num' },
+      { k: 'pedido', c: 'Pedido', t: 'text' },
+      { k: 'qtdPecasFisico', c: 'Qtd pçs físico', t: 'num' },
+      { k: 'evento', c: 'Evento', t: 'select', o: OPT.peEvento },
+      { k: 'situacao', c: 'Situação', t: 'select', o: OPT.peSituacao }
+    ],
+    'ped-cancelamento': [
+      { k: 'status', c: 'Status', t: 'select', o: OPT.statusCor },
+      { k: 'dataLimite', c: 'Data limite', t: 'date' },
+      { k: 'descricao', c: 'Descrição', t: 'text', req: true },
+      { k: 'motivo', c: 'Motivo', t: 'select', o: OPT.motivo, req: true },
+      { k: 'transportadora', c: 'Transportadora', t: 'text' },
+      { k: 'primeiraCompra', c: '1ª compra?', t: 'select', o: OPT.simNao },
+      { k: 'preco', c: 'Preço', t: 'num' },
+      { k: 'valor', c: 'Valor', t: 'num' },
+      { k: 'metaPerf', c: 'Meta perf.', t: 'text' },
+      { k: 'loginCE', c: 'Login CE', t: 'text', ce: true },
+      { k: 'instancia', c: 'Instância', t: 'text' }
+    ],
+    'ped-extravio': [
+      { k: 'solicitante', c: 'Solicitante', t: 'text' },
+      { k: 'descricao', c: 'Descrição', t: 'text', req: true },
+      { k: 'precoUnit', c: 'Preço unitário', t: 'num' },
+      { k: 'valorTotal', c: 'Valor total', t: 'num' },
+      { k: 'dataLimite', c: 'Data limite', t: 'date' },
+      { k: 'transportadora', c: 'Transportadora', t: 'text' },
+      { k: 'motivo', c: 'Motivo', t: 'select', o: OPT.motivo, req: true },
+      { k: 'evento', c: 'Evento', t: 'text' },
+      { k: 'faturistaSeparador', c: 'Faturista / separador', t: 'text' },
+      { k: 'loginCE', c: 'Login CE', t: 'text', ce: true }
+    ],
+    'ped-bloqueio': [
+      { k: 'status', c: 'Status', t: 'select', o: OPT.statusCor },
+      { k: 'loginCE', c: 'Login CE', t: 'text', ce: true }
+    ]
+  };
+  const CE_KEY = 'ultimo-login-ce';
+  // Tipos em que o Wave registra só o Nº Entrega; o Controle completa os dados na tratativa
+  const REGISTRO_SIMPLES = ['ped-div-pick-pack', 'ped-div-pack-exp'];
 
   /* ── Schema de cada auditoria ──
      Cada coluna: { c: nome exibido, e: editável?, t: tipo de campo, o: opções (se select) }
@@ -1103,10 +1282,60 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
   /* ── Tipo selection ── */
   // Nº Entrega só se aplica aos tipos de Gestão de Pedidos
   const COM_ENTREGA = ABAS.pedidos.tipos;
+
+  function buildPedFields(tipo) {
+    const box = document.getElementById('extra-ped-fields');
+    box.innerHTML = '';
+    const defs = PED_FIELDS[tipo];
+    if (!defs) return;
+    const ultimoCE = (() => { try { return localStorage.getItem(CE_KEY) || ''; } catch (_) { return ''; } })();
+    // monta em linhas de 2 campos
+    let rowEl = null;
+    defs.forEach((f, i) => {
+      if (i % 2 === 0) { rowEl = document.createElement('div'); rowEl.className = 'row'; box.appendChild(rowEl); }
+      const field = document.createElement('div');
+      field.className = 'field';
+      const id = 'px-' + f.k;
+      const reqMark = f.req ? ' <span class="req">*</span>' : '';
+      let control;
+      if (f.t === 'select') {
+        control = `<select id="${id}"><option value="">Selecione</option>` +
+          f.o.map(o => `<option value="${o}">${o}</option>`).join('') + `</select>`;
+      } else if (f.t === 'num') {
+        control = `<input id="${id}" type="number" step="any" min="0" autocomplete="off">`;
+      } else if (f.t === 'date') {
+        control = `<input id="${id}" type="date">`;
+      } else {
+        const val = f.ce ? ` value="${ultimoCE.replace(/"/g, '&quot;')}"` : '';
+        control = `<input id="${id}" type="text" autocomplete="off"${val}>`;
+      }
+      field.innerHTML = `<label for="${id}">${f.c}${reqMark}</label>${control}`;
+      rowEl.appendChild(field);
+    });
+  }
+
   function toggleExtras() {
-    const show = tipoSel && EXTRA_TIPOS.includes(tipoSel);
-    const extra = document.querySelector('.extra');
-    if (extra) extra.hidden = !show;
+    const isPedido = tipoSel && PED_FIELDS[tipoSel];
+    const simples = tipoSel && REGISTRO_SIMPLES.includes(tipoSel);
+    const extra = document.getElementById('extra-ped');
+    // Nos tipos simplificados, os campos extras NÃO aparecem no registro (serão preenchidos na tratativa)
+    if (extra) extra.hidden = !isPedido || simples;
+    if (isPedido && !simples) buildPedFields(tipoSel);
+
+    // aviso de registro simplificado
+    let aviso = document.getElementById('aviso-simples');
+    if (simples) {
+      if (!aviso) {
+        aviso = document.createElement('div');
+        aviso.id = 'aviso-simples';
+        aviso.style.cssText = 'font-size:12.5px;color:var(--ink-2);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 24%,transparent);border-radius:10px;padding:10px 13px;margin-top:4px';
+        aviso.innerHTML = '<b>Registro rápido:</b> informe apenas o Nº Entrega. Os demais dados serão preenchidos pelo Controle de Estoque na aba Tratativas.';
+        document.getElementById('extra-ped').insertAdjacentElement('afterend', aviso);
+      }
+      aviso.hidden = false;
+    } else if (aviso) {
+      aviso.hidden = true;
+    }
 
     const semEntrega = !tipoSel || !COM_ENTREGA.includes(tipoSel);
     document.getElementById('field-entrega').hidden = semEntrega;
@@ -1163,16 +1392,27 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
     if (!planta)  return toast('Selecione a planta', false);
     if (!turno)   return toast('Selecione o turno', false);
     if (COM_ENTREGA.includes(tipoSel) && !entrega) return toast('Informe o número da entrega', false);
-    if (!colab)   return toast('Informe o colaborador', false);
-    if (!item)    return toast('Informe o item', false);
-    if (!qtd)     return toast('Informe a quantidade', false);
+
+    const simples = REGISTRO_SIMPLES.includes(tipoSel);
+    if (!simples) {
+      if (!colab) return toast('Informe o colaborador', false);
+      if (!item)  return toast('Informe o item', false);
+      if (!qtd)   return toast('Informe a quantidade', false);
+    }
 
     let exData = '', exMotivo = '';
-    if (EXTRA_TIPOS.includes(tipoSel)) {
-      exData   = document.getElementById('ex-data').value;
-      exMotivo = document.getElementById('ex-motivo').value;
-      if (!exData)   return toast('Informe a data', false);
-      if (!exMotivo) return toast('Informe o motivo', false);
+    const extras = {};
+    if (PED_FIELDS[tipoSel] && !simples) {
+      for (const f of PED_FIELDS[tipoSel]) {
+        const el = document.getElementById('px-' + f.k);
+        const v = el ? el.value.trim() : '';
+        if (f.req && !v) return toast('Informe: ' + f.c, false);
+        extras[f.k] = v;
+        if (f.ce && v) { try { localStorage.setItem(CE_KEY, v); } catch (_) {} }
+      }
+      exMotivo = extras.motivo || '';
+    } else if (simples) {
+      for (const f of PED_FIELDS[tipoSel]) extras[f.k] = '';
     }
 
     const now = new Date();
@@ -1181,26 +1421,33 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
       iso:     now.toISOString(),
       data:    now.toLocaleDateString('pt-BR'),
       hora:    now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      mes:     now.toLocaleDateString('pt-BR', { month: '2-digit', year: 'numeric' }),
       tipo:    tipoSel,
       planta, turno, entrega, colab, item, qtd, obs,
-      exData, exMotivo
+      exData, exMotivo,
+      ...extras
     });
 
     save(); render(); updateColabList();
-    toast('Divergência registrada ✓', true);
+    if (PED_TIPOS.includes(registros[0].tipo)) syncSheets(registros[0]);
+    toast('Registro salvo ✓', true);
 
-    // Mantém: planta, turno, tipo selecionado
-    // Limpa: campos de entrada
-    ['entrega', 'item', 'qtd', 'colab', 'obs', 'ex-data', 'ex-motivo'].forEach(id => {
-      document.getElementById(id).value = '';
+    ['entrega', 'item', 'qtd', 'colab', 'obs'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
     });
+    if (PED_FIELDS[tipoSel]) {
+      for (const f of PED_FIELDS[tipoSel]) {
+        if (f.ce) continue;
+        const el = document.getElementById('px-' + f.k); if (el) el.value = '';
+      }
+    }
     document.getElementById('entrega').focus();
   });
 
   /* ── Limpar formulário ── */
   document.getElementById('limpar').addEventListener('click', () => {
-    ['tipo', 'planta', 'turno', 'entrega', 'item', 'qtd', 'colab', 'obs', 'ex-data', 'ex-motivo'].forEach(id => {
-      document.getElementById(id).value = '';
+    ['tipo', 'planta', 'turno', 'entrega', 'item', 'qtd', 'colab', 'obs'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
     });
     tipoSel = null;
     toggleExtras();
@@ -1226,23 +1473,82 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
   });
 
   /* ── Exportar CSV ── */
-  document.getElementById('btn-export').addEventListener('click', () => {
-    if (!registros.length) return toast('Nenhum registro para exportar', false);
-    const header = ['Data registro', 'Hora', 'Turno', 'Planta', 'Tipo', 'Entrega', 'Item', 'Quantidade', 'Colaborador', 'Data ocorrência', 'Motivo', 'Observação'];
-    const rows = registros.map(r => [
-      r.data, r.hora, r.turno || '', r.planta,
-      (META[r.tipo] ? META[r.tipo].label : r.tipo), r.entrega, r.item, r.qtd || '', r.colab,
-      r.exData ? r.exData.split('-').reverse().join('/') : '', r.exMotivo || '', r.obs || ''
-    ]);
+  function baixarCSV(nome, header, rows) {
     const csv = [header, ...rows]
-      .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .map(row => row.map(v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`).join(','))
       .join('\r\n');
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const a = Object.assign(document.createElement('a'), { href: url, download: `divergencias_${new Date().toISOString().slice(0, 10)}.csv` });
-    a.click();
+    const a = Object.assign(document.createElement('a'), { href: url, download: nome });
+    document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
-    toast(`CSV exportado — ${registros.length} registros`, true);
+  }
+  function slug(s) {
+    return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
+  const fmtData = v => v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v.split('-').reverse().join('/') : (v || '');
+
+  function fmtDT(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+  function tratCols(r, comInicio) {
+    const t = r.trat || {};
+    const regMs = new Date(r.iso).getTime();
+    const durTxt = ms => (ms == null || isNaN(ms) || ms < 0) ? '' : fmtDur(ms);
+    if (comInicio) {
+      const tRegIni = t.inicioIso ? (new Date(t.inicioIso).getTime() - regMs) : null;
+      const tIniFim = (t.inicioIso && t.fimIso) ? (new Date(t.fimIso).getTime() - new Date(t.inicioIso).getTime()) : null;
+      const tRegFim = t.fimIso ? (new Date(t.fimIso).getTime() - regMs) : null;
+      return [fmtDT(t.inicioIso), t.inicioCE || '', fmtDT(t.fimIso), t.fimCE || '', durTxt(tRegIni), durTxt(tIniFim), durTxt(tRegFim)];
+    }
+    const tRegFim = t.fimIso ? (new Date(t.fimIso).getTime() - regMs) : null;
+    return [fmtDT(t.fimIso), t.fimCE || '', durTxt(tRegFim)];
+  }
+
+  document.getElementById('btn-export').addEventListener('click', () => {
+    if (!registros.length) return toast('Nenhum registro para exportar', false);
+    const hoje = new Date().toISOString().slice(0, 10);
+    let arquivos = 0;
+
+    // 1) Um CSV por tipo de Gestão de Pedidos
+    Object.keys(PED_FIELDS).forEach(tipo => {
+      const regs = registros.filter(r => r.tipo === tipo);
+      if (!regs.length) return;
+      const defs = PED_FIELDS[tipo];
+      const comInicio = TRAT_COM_INICIO.includes(tipo);
+      const colsTrat = comInicio
+        ? ['Início tratativa', 'Iniciada por', 'Conclusão tratativa', 'Concluída por', 'Tempo registro→início', 'Tempo início→conclusão', 'Tempo registro→conclusão']
+        : ['Conclusão tratativa', 'Concluída por', 'Tempo registro→conclusão'];
+      const header = ['Mês', 'Data', 'Entrega', 'Item', 'Quantidade', 'Colaborador', 'Turno', 'Planta']
+        .concat(defs.map(f => f.c))
+        .concat(['Observação'])
+        .concat(colsTrat);
+      const rows = regs.map(r => {
+        const base = [r.mes || '', r.data || '', r.entrega || '', r.item || '', r.qtd || '', r.colab || '', r.turno || '', r.planta || ''];
+        const extra = defs.map(f => f.t === 'date' ? fmtData(r[f.k]) : (r[f.k] || ''));
+        return base.concat(extra).concat([r.obs || '']).concat(tratCols(r, comInicio));
+      });
+      baixarCSV(`${slug(META[tipo] ? META[tipo].label : tipo)}_${hoje}.csv`, header, rows);
+      arquivos++;
+    });
+
+    // 2) CSV genérico para os demais registros (estoque, insumos, paletes)
+    const outros = registros.filter(r => !PED_FIELDS[r.tipo]);
+    if (outros.length) {
+      const header = ['Data registro', 'Hora', 'Mês', 'Turno', 'Planta', 'Tipo', 'Entrega', 'Item', 'Quantidade', 'Colaborador', 'Observação', 'Conclusão tratativa', 'Concluída por', 'Tempo registro→conclusão'];
+      const rows = outros.map(r => [
+        r.data, r.hora, r.mes || '', r.turno || '', r.planta,
+        (META[r.tipo] ? META[r.tipo].label : r.tipo), r.entrega, r.item, r.qtd || '', r.colab, r.obs || ''
+      ].concat(tratCols(r, false)));
+      baixarCSV(`outras-ocorrencias_${hoje}.csv`, header, rows);
+      arquivos++;
+    }
+
+    if (!arquivos) return toast('Nenhum registro para exportar', false);
+    toast(`${arquivos} arquivo(s) CSV exportado(s)`, true);
   });
 
   /* ── Imprimir ── */
@@ -1255,21 +1561,425 @@ body.mode-mobile .row, body.mode-mobile .row-wide { grid-template-columns: 1fr; 
       s.classList.toggle('active', s.dataset.subtab === subAtual));
     document.getElementById('subpanel-ocorrencias').hidden = subAtual !== 'ocorrencias';
     document.getElementById('subpanel-auditorias').hidden  = subAtual !== 'auditorias';
+    document.getElementById('subpanel-tratativas').hidden  = subAtual !== 'tratativas';
+    document.getElementById('subpanel-dashped').hidden     = subAtual !== 'dashped';
+    if (subAtual === 'tratativas') renderTratativas();
+    if (subAtual === 'dashped') renderDashPed();
   }
   function atualizarSubtabs() {
-    // Sub-abas só aparecem em Gestão de Estoque
-    const mostra = abaAtual === 'estoque';
-    document.getElementById('subtabs').hidden = !mostra;
-    if (!mostra) {
-      // Outras gestões usam apenas o painel de ocorrências
-      document.getElementById('subpanel-ocorrencias').hidden = false;
-      document.getElementById('subpanel-auditorias').hidden  = true;
-    } else {
-      aplicarSubaba();
-    }
+    // Subtabs aparecem em todas as gestões; "Auditorias" só em Estoque; "Dashboard" só em Pedidos
+    document.getElementById('subtabs').hidden = false;
+    const audBtn = document.querySelector('.subtab[data-subtab="auditorias"]');
+    if (audBtn) audBtn.style.display = (abaAtual === 'estoque') ? '' : 'none';
+    const dashBtn = document.querySelector('.subtab[data-subtab="dashped"]');
+    if (dashBtn) dashBtn.style.display = (abaAtual === 'pedidos') ? '' : 'none';
+    // Se estava numa sub-aba que não vale para a gestão atual, volta para ocorrências
+    if (subAtual === 'auditorias' && abaAtual !== 'estoque') subAtual = 'ocorrencias';
+    if (subAtual === 'dashped' && abaAtual !== 'pedidos') subAtual = 'ocorrencias';
+    aplicarSubaba();
   }
   document.querySelectorAll('.subtab').forEach(s => {
     s.addEventListener('click', () => { subAtual = s.dataset.subtab; aplicarSubaba(); });
+  });
+
+  /* ── Tratativas (cronômetro de resolução) ── */
+  // Tipos que têm etapa intermediária "Iniciar tratativa" (fluxo com 2 pessoas: Wave -> Controle)
+  const TRAT_COM_INICIO = ['ped-div-pick-pack', 'ped-div-pack-exp'];
+  let tratFiltro = '';
+
+  function fmtDur(ms) {
+    if (ms == null || isNaN(ms) || ms < 0) return '—';
+    const s = Math.floor(ms / 1000);
+    const d = Math.floor(s / 86400);
+    const h = Math.floor((s % 86400) / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (d > 0) return `${d}d ${h}h ${m}m`;
+    if (h > 0) return `${h}h ${m}m ${sec}s`;
+    if (m > 0) return `${m}m ${sec}s`;
+    return `${sec}s`;
+  }
+  const ultimoCE = () => { try { return localStorage.getItem(CE_KEY) || ''; } catch (_) { return ''; } };
+
+  function dadosCompletos(r) {
+    const defs = PED_FIELDS[r.tipo];
+    if (!defs) return true;
+    for (const f of defs) { if (f.req && !(r[f.k] && String(r[f.k]).trim())) return false; }
+    if (!(r.item && r.item.trim())) return false;
+    if (!(r.qtd && String(r.qtd).trim())) return false;
+    if (!(r.colab && r.colab.trim())) return false;
+    return true;
+  }
+
+  function renderTratativas() {
+    const grid = document.getElementById('trat-grid');
+    const filtrosBox = document.getElementById('trat-filtros');
+    if (!grid) return;
+
+    // filtros por gestão
+    const gestaoLabels = { estoque: 'Estoque', pedidos: 'Pedidos', insumos: 'Insumos', paletes: 'Paletes' };
+    filtrosBox.innerHTML = ['', 'estoque', 'pedidos', 'insumos', 'paletes'].map(g =>
+      `<button class="trat-fpill ${tratFiltro === g ? 'active' : ''}" data-g="${g}">${g === '' ? 'Todas' : gestaoLabels[g]}</button>`
+    ).join('');
+    filtrosBox.querySelectorAll('.trat-fpill').forEach(b =>
+      b.addEventListener('click', () => { tratFiltro = b.dataset.g; renderTratativas(); }));
+
+    let lista = registros.slice();
+    if (tratFiltro) lista = lista.filter(r => (TIPO_GESTAO[r.tipo] || '') === tratFiltro);
+
+    if (!lista.length) {
+      grid.innerHTML = '<div class="trat-empty">Nenhuma ocorrência registrada' + (tratFiltro ? ' nesta gestão.' : '.') + '</div>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    lista.forEach(r => {
+      const meta = META[r.tipo] || { label: r.tipo, color: 'var(--accent)', bg: 'var(--chip-bg)' };
+      const comInicio = TRAT_COM_INICIO.includes(r.tipo);
+      const t = r.trat || {}; // { inicioIso, inicioCE, fimIso, fimCE }
+      const regMs = new Date(r.iso).getTime();
+
+      // estado
+      let estado, estadoCls;
+      if (t.fimIso) { estado = 'Concluída'; estadoCls = 'ok'; }
+      else if (t.inicioIso || (!comInicio && t.emAndamento)) { estado = 'Em tratativa'; estadoCls = 'and'; }
+      else { estado = 'Registrada'; estadoCls = 'reg'; }
+
+      const card = document.createElement('div');
+      card.className = 'trat-card';
+      card.style.setProperty('--tc', meta.color);
+
+      // cabeçalho
+      let html = `<div class="trat-card-h">
+        <span class="trat-tipo" style="color:${meta.color};background:${meta.bg}">${esc(meta.label)}</span>
+        <span class="trat-estado ${estadoCls}">${estado}</span>
+      </div>`;
+
+      // info
+      html += `<div class="trat-info">`;
+      if (r.entrega) html += `Entrega <b class="mono">${esc(r.entrega)}</b><br>`;
+      if (r.item) html += `Item <b class="mono">${esc(r.item)}</b> · Qtd <b>${esc(r.qtd || '—')}</b><br>`;
+      html += `Registrado <b>${esc(r.data)} ${esc(r.hora)}</b>`;
+      if (r.colab) html += ` · por <b>${esc(r.colab)}</b>`;
+      html += `</div>`;
+
+      // timers
+      html += `<div class="trat-timers">`;
+      if (comInicio) {
+        const regIni = t.inicioIso ? (new Date(t.inicioIso).getTime() - regMs) : (Date.now() - regMs);
+        html += `<div class="trat-timer-row"><span class="lbl">Registro → início</span><span class="val ${t.inicioIso ? '' : 'live'}" data-live="${t.inicioIso ? '' : 'reg-ini'}" data-reg="${regMs}">${t.inicioIso ? fmtDur(new Date(t.inicioIso).getTime() - regMs) : fmtDur(Date.now() - regMs)}</span></div>`;
+        if (t.inicioIso) {
+          const iniFim = t.fimIso ? (new Date(t.fimIso).getTime() - new Date(t.inicioIso).getTime()) : (Date.now() - new Date(t.inicioIso).getTime());
+          html += `<div class="trat-timer-row"><span class="lbl">Início → conclusão</span><span class="val ${t.fimIso ? '' : 'live'}" data-live="${t.fimIso ? '' : 'ini-fim'}" data-ini="${new Date(t.inicioIso).getTime()}">${fmtDur(iniFim)}</span></div>`;
+        }
+        html += `<div class="trat-timer-row"><span class="lbl">Registro → conclusão</span><span class="val ${t.fimIso ? '' : 'live'}" data-live="${t.fimIso ? '' : 'reg-fim'}" data-reg="${regMs}">${t.fimIso ? fmtDur(new Date(t.fimIso).getTime() - regMs) : fmtDur(Date.now() - regMs)}</span></div>`;
+      } else {
+        html += `<div class="trat-timer-row"><span class="lbl">Registro → conclusão</span><span class="val ${t.fimIso ? '' : 'live'}" data-live="${t.fimIso ? '' : 'reg-fim'}" data-reg="${regMs}">${t.fimIso ? fmtDur(new Date(t.fimIso).getTime() - regMs) : fmtDur(Date.now() - regMs)}</span></div>`;
+      }
+      html += `</div>`;
+
+      // quem
+      if (t.inicioCE || t.fimCE) {
+        html += `<div class="trat-info" style="font-size:11.5px">`;
+        if (t.inicioCE) html += `Iniciada por <b>${esc(t.inicioCE)}</b><br>`;
+        if (t.fimCE) html += `Concluída por <b>${esc(t.fimCE)}</b>`;
+        html += `</div>`;
+      }
+
+      // ações
+      if (!t.fimIso) {
+        const precisaIniciar = comInicio && !t.inicioIso;
+        const simples = REGISTRO_SIMPLES.includes(r.tipo);
+        const completo = dadosCompletos(r);
+
+        // formulário "Completar dados" (oculto até clicar) — só nos tipos simplificados
+        if (simples) {
+          html += `<div class="trat-complete" data-form="${r.id}" hidden>${buildCompleteForm(r)}</div>`;
+        }
+
+        html += `<div><span class="trat-ce-label">Login CE</span><input class="trat-ce-input" data-ce="${r.id}" value="${esc(ultimoCE())}" placeholder="Seu login"></div>`;
+        html += `<div class="trat-actions">`;
+        if (simples) {
+          html += `<button class="btn btn-ghost" data-act="completar" data-id="${r.id}"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>${completo ? 'Editar dados' : 'Completar dados'}</button>`;
+        }
+        if (precisaIniciar) {
+          html += `<button class="btn btn-primary" data-act="iniciar" data-id="${r.id}"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Iniciar tratativa</button>`;
+        } else {
+          const lock = simples && !completo;
+          html += `<button class="btn btn-primary" data-act="concluir" data-id="${r.id}"${lock ? ' disabled title="Complete os dados para concluir" style="opacity:.5;cursor:not-allowed"' : ''}><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Concluir tratativa</button>`;
+        }
+        html += `</div>`;
+        if (REGISTRO_SIMPLES.includes(r.tipo) && !completo) {
+          html += `<div style="font-size:11px;color:var(--ink-3)">Complete os dados antes de concluir a tratativa.</div>`;
+        }
+      }
+
+      card.innerHTML = html;
+      grid.appendChild(card);
+    });
+
+    // liga ações
+    grid.querySelectorAll('[data-act]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const reg = registros.find(x => x.id === id);
+        if (!reg) return;
+        const act = btn.dataset.act;
+
+        // abrir/fechar formulário de completar dados
+        if (act === 'completar') {
+          const form = grid.querySelector(`[data-form="${id}"]`);
+          if (form) form.hidden = !form.hidden;
+          return;
+        }
+
+        const ceEl = grid.querySelector(`[data-ce="${id}"]`);
+        const ce = ceEl ? ceEl.value.trim() : '';
+        if (!ce) { toast('Informe o Login CE', false); if (ceEl) ceEl.focus(); return; }
+        try { localStorage.setItem(CE_KEY, ce); } catch (_) {}
+        reg.trat = reg.trat || {};
+        const now = new Date().toISOString();
+        if (act === 'iniciar') {
+          reg.trat.inicioIso = now; reg.trat.inicioCE = ce;
+        } else if (act === 'concluir') {
+          if (REGISTRO_SIMPLES.includes(reg.tipo) && !dadosCompletos(reg)) {
+            toast('Complete os dados antes de concluir', false);
+            const form = grid.querySelector(`[data-form="${id}"]`);
+            if (form) form.hidden = false;
+            return;
+          }
+          if (!reg.trat.inicioIso && TRAT_COM_INICIO.includes(reg.tipo)) { reg.trat.inicioIso = now; reg.trat.inicioCE = ce; }
+          reg.trat.fimIso = now; reg.trat.fimCE = ce;
+        }
+        save(); renderTratativas();
+        if (PED_TIPOS.includes(reg.tipo)) syncSheets(reg);
+        toast(act === 'iniciar' ? 'Tratativa iniciada ✓' : 'Tratativa concluída ✓', true);
+      });
+    });
+
+    // salvar dados completados
+    grid.querySelectorAll('[data-savecomplete]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.savecomplete;
+        const reg = registros.find(x => x.id === id);
+        if (!reg) return;
+        const form = grid.querySelector(`[data-form="${id}"]`);
+        if (!form) return;
+        // campos comuns
+        const gv = sel => { const el = form.querySelector(sel); return el ? el.value.trim() : ''; };
+        reg.item = gv('[data-cf="item"]');
+        reg.qtd = gv('[data-cf="qtd"]');
+        reg.colab = gv('[data-cf="colab"]');
+        // campos do tipo
+        for (const f of PED_FIELDS[reg.tipo]) {
+          const el = form.querySelector(`[data-cf="${f.k}"]`);
+          if (el) { reg[f.k] = el.value.trim(); if (f.ce && el.value.trim()) { try { localStorage.setItem(CE_KEY, el.value.trim()); } catch (_) {} } }
+        }
+        reg.exMotivo = reg.motivo || '';
+        save(); updateColabList(); renderTratativas();
+        if (PED_TIPOS.includes(reg.tipo)) syncSheets(reg);
+        toast('Dados salvos ✓', true);
+      });
+    });
+  }
+
+  // formulário de completar dados dentro do card (tipos simplificados)
+  function buildCompleteForm(r) {
+    const defs = PED_FIELDS[r.tipo];
+    const inp = (k, label, val, req) => `<div class="field" style="margin:0"><label style="font-size:10.5px" >${label}${req ? ' <span class="req">*</span>' : ''}</label><input class="trat-ce-input" data-cf="${k}" value="${esc(val || '')}"></div>`;
+    let f = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">';
+    f += inp('item', 'Item (SKU)', r.item, true);
+    f += inp('qtd', 'Qtd', r.qtd, true);
+    f += inp('colab', 'Colaborador', r.colab, true);
+    // campos específicos do tipo
+    defs.forEach(fd => {
+      const val = r[fd.k] || '';
+      let control;
+      if (fd.t === 'select') {
+        control = `<select class="trat-ce-input" data-cf="${fd.k}"><option value="">Selecione</option>` +
+          fd.o.map(o => `<option value="${o}"${o === val ? ' selected' : ''}>${o}</option>`).join('') + `</select>`;
+      } else if (fd.t === 'num') {
+        control = `<input class="trat-ce-input" type="number" step="any" min="0" data-cf="${fd.k}" value="${esc(val)}">`;
+      } else if (fd.t === 'date') {
+        control = `<input class="trat-ce-input" type="date" data-cf="${fd.k}" value="${esc(val)}">`;
+      } else {
+        control = `<input class="trat-ce-input" data-cf="${fd.k}" value="${esc(val)}">`;
+      }
+      f += `<div class="field" style="margin:0"><label style="font-size:10.5px">${fd.c}${fd.req ? ' <span class="req">*</span>' : ''}</label>${control}</div>`;
+    });
+    f += '</div>';
+    f += `<button class="btn btn-primary" data-savecomplete="${r.id}" style="width:100%;justify-content:center;padding:8px"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>Salvar dados</button>`;
+    return f;
+  }
+
+  // cronômetro ao vivo (atualiza timers abertos a cada segundo)
+  setInterval(() => {
+    if (subAtual !== 'tratativas') return;
+    const now = Date.now();
+    document.querySelectorAll('#trat-grid .val.live').forEach(el => {
+      const tipo = el.dataset.live;
+      if (tipo === 'reg-ini' || tipo === 'reg-fim') {
+        const reg = Number(el.dataset.reg); if (reg) el.textContent = fmtDur(now - reg);
+      } else if (tipo === 'ini-fim') {
+        const ini = Number(el.dataset.ini); if (ini) el.textContent = fmtDur(now - ini);
+      }
+    });
+  }, 1000);
+
+  /* ── Dashboard de Pedidos ── */
+  const PED_TIPOS = ABAS.pedidos.tipos;
+
+  /* ── Integração com Google Sheets (Apps Script Web App) ──
+     Cole abaixo a URL /exec gerada ao publicar o Apps Script.
+     Enquanto estiver vazia, o painel funciona normal e só não envia ao Sheets. */
+  const SHEETS_URL = 'https://script.google.com/a/macros/petlove.com.br/s/AKfycbyJHiq37tMvuRoiuHv6bEMbr4k0OalHqfMlxAtcN5WUMrqTKHq95KuJUrUSm-G7Fv4n/exec'; // ex.: 'https://script.google.com/macros/s/AKfycb....../exec'
+
+  function tratTempos(r) {
+    const t = r.trat || {};
+    const regMs = new Date(r.iso).getTime();
+    const dur = ms => (ms == null || isNaN(ms) || ms < 0) ? '' : fmtDur(ms);
+    const tRegIni = t.inicioIso ? new Date(t.inicioIso).getTime() - regMs : null;
+    const tIniFim = (t.inicioIso && t.fimIso) ? new Date(t.fimIso).getTime() - new Date(t.inicioIso).getTime() : null;
+    const tRegFim = t.fimIso ? new Date(t.fimIso).getTime() - regMs : null;
+    return {
+      inicioIso: t.inicioIso || '', inicioCE: t.inicioCE || '',
+      fimIso: t.fimIso || '', fimCE: t.fimCE || '',
+      tRegIni: dur(tRegIni), tIniFim: dur(tIniFim), tRegFim: dur(tRegFim)
+    };
+  }
+
+  function syncSheets(reg) {
+    if (!SHEETS_URL) return; // não configurado ainda
+    try {
+      const payload = Object.assign({}, reg, { tempos: tratTempos(reg), tipoLabel: (META[reg.tipo] ? META[reg.tipo].label : reg.tipo) });
+      fetch(SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+    } catch (_) {}
+  }
+  function dpFiltrados() {
+    const ini = document.getElementById('dp-ini').value;
+    const fim = document.getElementById('dp-fim').value;
+    return registros.filter(r => {
+      if (!PED_TIPOS.includes(r.tipo)) return false;
+      const d = (r.iso || '').slice(0, 10); // yyyy-mm-dd
+      if (ini && d < ini) return false;
+      if (fim && d > fim) return false;
+      return true;
+    });
+  }
+  function mediaResolucao(regs) {
+    // tempo registro -> conclusão, só concluídas
+    const durs = regs.filter(r => r.trat && r.trat.fimIso)
+      .map(r => new Date(r.trat.fimIso).getTime() - new Date(r.iso).getTime())
+      .filter(x => x >= 0);
+    if (!durs.length) return null;
+    return durs.reduce((a, b) => a + b, 0) / durs.length;
+  }
+  function barra(label, val, max, cor, sufixo) {
+    const pct = max > 0 ? Math.round(val / max * 100) : 0;
+    return `<div class="dp-bar-row">
+      <span class="dp-bar-lbl">${esc(label)}</span>
+      <span class="dp-bar-track"><span class="dp-bar-fill" style="width:${pct}%;background:${cor}"></span></span>
+      <span class="dp-bar-val">${sufixo != null ? sufixo : val}</span>
+    </div>`;
+  }
+
+  function renderDashPed() {
+    const regs = dpFiltrados();
+    const totalTodos = registros.filter(r => PED_TIPOS.includes(r.tipo)).length;
+
+    // resumo período
+    const ini = document.getElementById('dp-ini').value, fim = document.getElementById('dp-fim').value;
+    let periodoTxt = 'Todos os registros';
+    if (ini || fim) periodoTxt = 'Período: ' + (ini ? fmtData(ini) : '…') + ' até ' + (fim ? fmtData(fim) : '…');
+    document.getElementById('dp-resumo-periodo').textContent = periodoTxt + ` · ${regs.length} de ${totalTodos}`;
+
+    // KPIs
+    const concluidas = regs.filter(r => r.trat && r.trat.fimIso).length;
+    const emTrat = regs.filter(r => r.trat && r.trat.inicioIso && !r.trat.fimIso).length;
+    const pendentes = regs.length - concluidas - emTrat;
+    const media = mediaResolucao(regs);
+    const pctConcl = regs.length ? Math.round(concluidas / regs.length * 100) : 0;
+    // tipo mais frequente
+    const porTipo = {};
+    regs.forEach(r => { porTipo[r.tipo] = (porTipo[r.tipo] || 0) + 1; });
+    const topTipo = Object.keys(porTipo).sort((a, b) => porTipo[b] - porTipo[a])[0];
+    const topTipoLabel = topTipo ? (META[topTipo] ? META[topTipo].label : topTipo) : '—';
+
+    document.getElementById('dp-kpis').innerHTML =
+      `<div class="dp-kpi"><div class="l">Total de ocorrências</div><div class="n">${regs.length}</div><div class="s">no período</div></div>
+       <div class="dp-kpi"><div class="l">Concluídas</div><div class="n" style="color:var(--ok)">${concluidas}</div><div class="s">${pctConcl}% do total</div></div>
+       <div class="dp-kpi"><div class="l">Em tratativa / pendentes</div><div class="n" style="color:#E0A93B">${emTrat + pendentes}</div><div class="s">${emTrat} em andamento · ${pendentes} pendentes</div></div>
+       <div class="dp-kpi"><div class="l">Tempo médio de resolução</div><div class="n" style="font-size:24px">${media == null ? '—' : fmtDur(media)}</div><div class="s">registro → conclusão</div></div>
+       <div class="dp-kpi"><div class="l">Tipo mais frequente</div><div class="n" style="font-size:18px;line-height:1.2">${esc(topTipoLabel)}</div><div class="s">${topTipo ? porTipo[topTipo] + ' ocorrência(s)' : ''}</div></div>`;
+
+    // Distribuição por tipo
+    const tipoBox = document.getElementById('dp-por-tipo');
+    if (!regs.length) { tipoBox.innerHTML = '<div class="dp-empty">Sem ocorrências no período.</div>'; }
+    else {
+      const maxT = Math.max(...PED_TIPOS.map(t => porTipo[t] || 0));
+      tipoBox.innerHTML = PED_TIPOS.filter(t => porTipo[t]).sort((a, b) => porTipo[b] - porTipo[a])
+        .map(t => barra(META[t] ? META[t].label : t, porTipo[t], maxT, (META[t] ? META[t].color : 'var(--accent)'))).join('');
+    }
+
+    // Comparativo por filial (planta)
+    const porFilial = {};
+    regs.forEach(r => { const f = r.planta || '—'; porFilial[f] = (porFilial[f] || 0) + 1; });
+    const filiais = Object.keys(porFilial).sort((a, b) => porFilial[b] - porFilial[a]);
+    const filialBox = document.getElementById('dp-por-filial');
+    if (!filiais.length) { filialBox.innerHTML = '<div class="dp-empty">Sem ocorrências no período.</div>'; }
+    else {
+      const maxF = Math.max(...filiais.map(f => porFilial[f]));
+      filialBox.innerHTML = filiais.map(f => barra(f, porFilial[f], maxF, 'var(--accent)')).join('');
+    }
+
+    // Tempo médio por tipo
+    const tempoBox = document.getElementById('dp-tempos');
+    const temposPorTipo = PED_TIPOS.map(t => {
+      const m = mediaResolucao(regs.filter(r => r.tipo === t));
+      return { t, m };
+    }).filter(x => x.m != null);
+    if (!temposPorTipo.length) { tempoBox.innerHTML = '<div class="dp-empty">Nenhuma tratativa concluída no período ainda.</div>'; }
+    else {
+      const maxM = Math.max(...temposPorTipo.map(x => x.m));
+      tempoBox.innerHTML = temposPorTipo.sort((a, b) => b.m - a.m)
+        .map(x => barra(META[x.t] ? META[x.t].label : x.t, x.m, maxM, (META[x.t] ? META[x.t].color : 'var(--accent)'), fmtDur(x.m))).join('');
+    }
+
+    // Matriz filial × tipo
+    const matrizBox = document.getElementById('dp-matriz');
+    if (!regs.length) { matrizBox.innerHTML = '<div class="dp-empty">Sem dados.</div>'; }
+    else {
+      const tiposComDados = PED_TIPOS.filter(t => porTipo[t]);
+      let html = '<table class="dp-matriz-tbl"><thead><tr><th>Filial</th>' +
+        tiposComDados.map(t => `<th>${esc(META[t] ? META[t].label : t)}</th>`).join('') +
+        '<th class="tot">Total</th></tr></thead><tbody>';
+      filiais.forEach(f => {
+        html += `<tr><td>${esc(f)}</td>`;
+        tiposComDados.forEach(t => {
+          const n = regs.filter(r => r.planta === f && r.tipo === t).length;
+          html += `<td>${n || '·'}</td>`;
+        });
+        html += `<td class="tot">${porFilial[f]}</td></tr>`;
+      });
+      // linha total
+      html += `<tr><td class="tot">Total</td>` +
+        tiposComDados.map(t => `<td class="tot">${porTipo[t]}</td>`).join('') +
+        `<td class="tot">${regs.length}</td></tr>`;
+      html += '</tbody></table>';
+      matrizBox.innerHTML = html;
+    }
+  }
+  document.getElementById('dp-ini').addEventListener('change', renderDashPed);
+  document.getElementById('dp-fim').addEventListener('change', renderDashPed);
+  document.getElementById('dp-limpar').addEventListener('click', () => {
+    document.getElementById('dp-ini').value = '';
+    document.getElementById('dp-fim').value = '';
+    renderDashPed();
   });
 
   /* ── Auditorias ── */
